@@ -1,5 +1,6 @@
 package namedEntity.heuristic;
 
+import java.io.Serializable;
 import java.util.Map;
 import static java.util.Map.entry;
 
@@ -21,7 +22,7 @@ import namedEntity.entities_themes.LastnameTennis;
 import namedEntity.entities_themes.OtherEntityCinema;
 import namedEntity.entities_themes.OtherEntityNational;
 
-public abstract class Heuristic {
+public abstract class Heuristic implements Serializable {
 
     private static Map<String, Class<? extends NamedEntity>> categoryMap = Map.ofEntries(
             entry("Dybala", LastnameFootball.class),

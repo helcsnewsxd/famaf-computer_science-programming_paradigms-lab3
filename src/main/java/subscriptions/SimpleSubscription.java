@@ -1,6 +1,7 @@
 package subscriptions;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import httpRequest.InvalidUrlTypeToFeedException;
 import webPageParser.EmptyFeedException;
 import webPageParser.GeneralParser;
 
-public class SimpleSubscription {
+public class SimpleSubscription implements Serializable {
     private String url;
     private List<String> urlParameters;
     private String urlType;
