@@ -12,6 +12,7 @@ import org.xml.sax.SAXException;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import scala.Function0;
 import scala.Tuple2;
@@ -107,10 +108,8 @@ public class Main {
 
         if(normalPrint) {
             // Filter out feeds and print them
-            parsedFeeds.foreach((feed) -> {
-                // Print feed to user
-                feed.prettyPrint();
-            });
+            // Print feed to user
+            parsedFeeds.foreach(Feed::prettyPrint);
         } else {
             parsedFeeds.flatMap(feed -> {
                 if(feed.getArticleList() != null) {
@@ -126,7 +125,11 @@ public class Main {
                 } else {
                     return Collections.emptyIterator();
                 }
-            }).foreach(namedEntity -> {
+            }).filter(Objects::nonNull).mapToPair(namedEntity -> new Tuple2<>(namedEntity.getName(), namedEntity)).reduceByKey((n1, n2) -> {
+                var n = new NamedEntity(n1.getName(), n1.getCategory(), n1.getFrequency() + n1.getFrequency());
+                n.setTheme(n1.getTheme());
+                return n;
+            }).map(Tuple2::_2).foreach(namedEntity -> {
                 System.out.println(namedEntity.getName());
                 System.out.println(namedEntity.getFrequency());
                 System.out.println(namedEntity.getCategory());
