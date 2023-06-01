@@ -22,7 +22,7 @@ public class RedditParser extends GeneralParser{
         JSONArray articles = data.getJSONArray("children");
 
         if(articles.length() == 0) {
-            throw new EmptyFeedException("Feed vacio");
+            throw new EmptyFeedException("Empty feed");
         } else {
             JSONObject firstArticle = articles.getJSONObject(0).getJSONObject("data");
             feed.setSiteName(firstArticle.getString("subreddit"));
@@ -32,7 +32,7 @@ public class RedditParser extends GeneralParser{
             JSONObject article = articles.getJSONObject(i).getJSONObject("data");
 
             String title = article.getString("title");
-            Number timestamp = article.getNumber("created");
+            Number timestamp = article.getInt("created");
             String text = article.getString("selftext");
             String link = article.getString("url");
 

@@ -14,13 +14,13 @@ import webPageParser.RedditParser;
 import webPageParser.RssParser;
 
 public class Subscriptions {
-    private List<SimpleSubscription> subscriptionsList;
+    private final List<SimpleSubscription> subscriptionsList;
 
     // INITIALIZATION
 
     public Subscriptions() {
         super();
-        this.subscriptionsList = new ArrayList<SimpleSubscription>();
+        this.subscriptionsList = new ArrayList<>();
     }
 
     // GET
@@ -45,15 +45,15 @@ public class Subscriptions {
     // PRINT
     @Override
     public String toString() {
-        String str = "";
+        StringBuilder str = new StringBuilder();
         for (SimpleSubscription s : subscriptionsList) {
-            str += s.toString();
+            str.append(s.toString());
         }
         return "[" + str + "]";
     }
 
     public void prettyPrint() {
-        System.out.println(this.toString());
+        System.out.println(this);
     }
 
     public void parse(String subscriptionsFilePath) throws FileNotFoundException, JSONException {

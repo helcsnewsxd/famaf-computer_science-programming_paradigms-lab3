@@ -8,7 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class HTTPRequester {
-    public String getFeed(String urlFeed, String urlType) throws InvalidUrlTypeToFeedException, MalformedURLException, IOException, HttpRequestException {
+    public String getFeed(String urlFeed, String urlType) throws InvalidUrlTypeToFeedException, IOException, HttpRequestException {
         if (urlType.equals("rss"))
             return getFeedRss(urlFeed);
         else if (urlType.equals("reddit"))
@@ -17,18 +17,16 @@ public class HTTPRequester {
             throw new InvalidUrlTypeToFeedException("invalid urlType");
     }
 
-    private String getFeedRss(String urlFeed) throws MalformedURLException, IOException, HttpRequestException {
-        String feedRss = getResponse(urlFeed);
-        return feedRss;
+    private String getFeedRss(String urlFeed) throws IOException, HttpRequestException {
+        return getResponse(urlFeed);
     }
 
-    private static String getFeedReedit(String urlFeed) throws MalformedURLException, IOException, HttpRequestException{
-        String feedReeditJson = getResponse(urlFeed);
-        return feedReeditJson;
+    private static String getFeedReedit(String urlFeed) throws IOException, HttpRequestException{
+        return getResponse(urlFeed);
     }
 
-    private static String getResponse(String url) throws MalformedURLException, IOException, HttpRequestException {
-        StringBuffer feedRssXml = new StringBuffer();
+    private static String getResponse(String url) throws IOException, HttpRequestException {
+        StringBuilder feedRssXml = new StringBuilder();
 
         URL urlObj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
@@ -40,11 +38,13 @@ public class HTTPRequester {
 
         BufferedReader streamReader;
 
-        Boolean reqError;
+        boolean reqError;
 
-        if ((reqError = status > 299)) {
+        if (status > 299) {
+            reqError = true;
             streamReader = new BufferedReader(new InputStreamReader(con.getErrorStream()));
         } else {
+            reqError = false;
             streamReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
         }
         String inputLine;

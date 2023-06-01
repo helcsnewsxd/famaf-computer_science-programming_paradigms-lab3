@@ -15,7 +15,7 @@ public class Article {
     private Date publicationDate;
     private String link;
 
-    private List<NamedEntity> namedEntityList = new ArrayList<>();
+    private final List<NamedEntity> namedEntityList = new ArrayList<>();
 
     public List<NamedEntity> getNamedEntityList () {
         return this.namedEntityList;
@@ -90,8 +90,8 @@ public class Article {
                 NamedEntity ne = this.getNamedEntity(s);
                 if (ne == null) {
                     Class<? extends NamedEntity> categoryClass = h.getCategory(s);
-                    // Si no hay clasificacion definida para esta named entity, su tipo sera 
-                    // generico.
+                    // Si no hay clasificación definida para esta named entity, su tipo será
+                    // genérico.
                     if(categoryClass == null) {
                         categoryClass = OtherEntityOtherThemes.class;
                     }

@@ -4,7 +4,7 @@ import java.util.List;
 
 public class QuickHeuristic extends Heuristic {
 
-    private static List<String> keyWords = List.of(
+    private static final List<String> keyWords = List.of(
             "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you",
             "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she",
             "her", "hers", "herself", "it", "its", "itself", "they", "them", "your",

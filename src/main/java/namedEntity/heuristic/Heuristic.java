@@ -23,7 +23,7 @@ import namedEntity.entities_themes.OtherEntityNational;
 
 public abstract class Heuristic {
 
-    private static Map<String, Class<? extends NamedEntity>> categoryMap = Map.ofEntries(
+    private static final Map<String, Class<? extends NamedEntity>> categoryMap = Map.ofEntries(
             entry("Dybala", LastnameFootball.class),
             entry("Apple", CompanyOtherThemes.class),
             entry("Google", CompanyOtherThemes.class),

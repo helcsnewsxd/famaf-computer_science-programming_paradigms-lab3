@@ -20,7 +20,7 @@ import feed.Article;
 import feed.Feed;
 
 public class Main {
-    private static String subscriptionsFilePath = "config/subscriptions.json";
+    private static final String subscriptionsFilePath = "config/subscriptions.json";
 
     private static void printHelp() {
         System.out.println("Please, call this program in correct way: FeedReader [-ne]");
@@ -31,10 +31,10 @@ public class Main {
         if (args.length > 1 || (args.length == 1 && !args[0].equals("-ne")))
             printHelp();
         else {
-            Boolean normalPrint = args.length == 0;
+            boolean normalPrint = args.length == 0;
 
             // List of errors
-            List<String> subscriptionErrors = new ArrayList<String>();
+            List<String> subscriptionErrors = new ArrayList<>();
 
             // Get subscriptions
             Subscriptions subscriptions = new Subscriptions();
@@ -53,12 +53,12 @@ public class Main {
                             feed.prettyPrint();
                         } else {
                             // heuristic in use
-                            Heuristic heur = new QuickHeuristic();
+                            Heuristic heuristicUsed = new QuickHeuristic();
 
 
-                            // computes the named entities for each article, saving all ne in their respective lists
+                            // computes the named entities for each article, saving all named entities in their respective lists
                             for (Article article : feed.getArticleList()) {
-                                article.computeNamedEntities(heur);
+                                article.computeNamedEntities(heuristicUsed);
                                 for (NamedEntity namedEntity : article.getNamedEntityList()) {
                                     System.out.println(namedEntity.getName());
                                     System.out.println(namedEntity.getFrequency());
@@ -84,16 +84,12 @@ public class Main {
                                             + simpleSubscription.getFormattedUrlForParameter(j));
                     } catch (MalformedURLException e) {
                         subscriptionErrors.add(
-                                "Malformed URL exception en subscripcion "
+                                "Malformed URL exception in subscription "
                                         + simpleSubscription.getFormattedUrlForParameter(j));
                     } catch (IOException e) {
                         subscriptionErrors.add(
-                                "IO exception en subscripcion " + simpleSubscription.getFormattedUrlForParameter(j));
-                    } catch (ParserConfigurationException e) {
-                        subscriptionErrors.add(
-                                "Parse error in "
-                                        + simpleSubscription.getFormattedUrlForParameter(j));
-                    } catch (ParseException e) {
+                                "IO exception in subscription " + simpleSubscription.getFormattedUrlForParameter(j));
+                    } catch (ParserConfigurationException | ParseException e) {
                         subscriptionErrors.add(
                                 "Parse error in "
                                         + simpleSubscription.getFormattedUrlForParameter(j));

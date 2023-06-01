@@ -1,10 +1,10 @@
 package subscriptions;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -19,7 +19,7 @@ import webPageParser.GeneralParser;
 
 public class SimpleSubscription {
     private String url;
-    private List<String> urlParameters;
+    private final List<String> urlParameters;
     private String urlType;
     private GeneralParser parser;
 
@@ -28,18 +28,15 @@ public class SimpleSubscription {
     public SimpleSubscription() {
         super();
         this.url = this.urlType = null;
-        this.urlParameters = new ArrayList<String>();
+        this.urlParameters = new ArrayList<>();
     }
     
     public SimpleSubscription(String url, List<String> urlParameters, String urlType) {
         super();
         this.url = url;
         this.urlType = urlType;
-        
-        if (urlParameters == null)
-        this.urlParameters = new ArrayList<String>();
-        else
-        this.urlParameters = urlParameters;
+
+        this.urlParameters = Objects.requireNonNullElseGet(urlParameters, ArrayList::new);
     }
 
     // GET
@@ -86,13 +83,12 @@ public class SimpleSubscription {
         this.urlParameters.add(urlParameter);
     }
 
-    public Feed parse(int paramIndex) throws MalformedURLException, InvalidUrlTypeToFeedException, IOException, HttpRequestException, ParserConfigurationException, SAXException, ParseException, EmptyFeedException {
+    public Feed parse(int paramIndex) throws InvalidUrlTypeToFeedException, IOException, HttpRequestException, ParserConfigurationException, SAXException, ParseException, EmptyFeedException {
         HTTPRequester httpRequester = new HTTPRequester();
         String feedText = httpRequester.getFeed(this.getFormattedUrlForParameter(paramIndex),
                 this.getUrlType());
 
-        Feed feed = this.parser.parse(feedText);
-        return feed;
+        return this.parser.parse(feedText);
 
     }
 
@@ -104,7 +100,7 @@ public class SimpleSubscription {
     }
 
     public void prettyPrint() {
-        System.out.println(this.toString());
+        System.out.println(this);
     }
 
     // MAIN

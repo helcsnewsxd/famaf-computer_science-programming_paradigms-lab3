@@ -6,11 +6,11 @@ import java.util.Random;
 
 public class RandomHeuristic extends Heuristic {
 
-    private Random rnd = new Random();
+    private final Random rnd = new Random();
 
-    // usefull for random heuritic's consistency
-    private List<String> positiveCases = new ArrayList<String>();
-    private List<String> negativeCases = new ArrayList<String>();
+    // useful for random heuristic's consistency
+    private final List<String> positiveCases = new ArrayList<>();
+    private final List<String> negativeCases = new ArrayList<>();
 
     private boolean isPositiveCase(String entity) {
         return this.positiveCases.contains(entity);
