@@ -5,6 +5,7 @@ import namedEntity.heuristic.Heuristic;
 import namedEntity.heuristic.QuickHeuristic;
 import namedEntity.heuristic.RandomHeuristic;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.xml.sax.SAXException;
 import scala.Tuple2;
@@ -48,12 +49,12 @@ public class Main {
         subscriptions.parse(subscriptionsFilePath);
 
         // Paralelizo la lista de las subscripciones para hacerlo de forma concurrente
-        var subscriptionList = spark.parallelize(subscriptions.getSubscriptionList());
+        JavaRDD<SimpleSubscription> subscriptionList = spark.parallelize(subscriptions.getSubscriptionList());
 
         // Obtengo todos los feeds
         // Se consideran tuplas (feed, error). Una es null y la otra es dato (se usa
         // para diferenciar)
-        var feeds = subscriptionList
+        JavaRDD<Tuple2<Feed, String>> feeds = subscriptionList
                 // Separo las subscripciones por sus parámetros
                 .flatMap(simpleSubscription -> {
                     List<Tuple2<SimpleSubscription, Integer>> feedConstructorOptionsList = new ArrayList<>();
@@ -96,12 +97,12 @@ public class Main {
                 });
 
         // Preparo la lista de feeds obtenidos
-        var feedList = feeds
+        JavaRDD<Feed> feedList = feeds
                 .filter(actualFeed -> actualFeed._1() != null)
                 .flatMap(actualFeed -> Collections.singletonList(actualFeed._1()).iterator());
 
         // Preparo la lista de errores que sucedieron
-        var errorList = feeds
+        JavaRDD<String> errorList = feeds
                 .filter(actualFeed -> actualFeed._2() != null)
                 .flatMap(actualFeed -> Collections.singletonList(actualFeed._2()).iterator());
 
@@ -112,7 +113,7 @@ public class Main {
             // Heurística en uso
             Heuristic heuristicUsed = new QuickHeuristic();
 
-            var namedEntities = feedList
+            JavaRDD<namedEntity.entities.NamedEntity> namedEntities = feedList
                     // Obtengo todos los artículos
                     .flatMap(feed -> feed.getArticleList().iterator())
                     // Obtengo las namedEntity

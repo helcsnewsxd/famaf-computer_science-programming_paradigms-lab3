@@ -278,6 +278,40 @@ En este caso, a diferencia del ejemplo provisto por Spark para un solo archivo, 
 
 ## ¿Cómo adaptar el código del Laboratorio 2 a la estructura del programa objetivo en Spark?
 
+El proceso de adaptación del código del Laboratorio 2 se dividió en varias partes dependiendo de la _importancia_ o _profundidad_ que cada una tiene en el funcionamiento del proyecto. 
+Si bien en el código está bien explicada cada parte con comentarios, aquí va a mencionarse nuevamente. 
+Se consideraron las siguientes partes:
 
+### Adaptación general (en Main.java)
+
+El esquema que se consideró fue:
+
+- Validar los argumentos (en caso que no sean válidos, imprimo una ayuda y termino)
+- Hacer las configuraciones para usar Spark (SparkConf y JavaSparkContext)
+- Creo una Subscription que parsea el archivo JSON dividiendo cada JSONObject para las SimpleSubscription (todavía no se parsearon)
+- Paralelizo las listas de subscripciones para hacer las siguientes acciones de forma concurrente cada una
+	- Separar las subscripciones por sus parámetros
+	- Para cada combinación de subscripción - parámetro, se parsea el JSONObject, se hace la HTTP Request y se obtiene el Feed
+		- Se manejan los casos de error devolviendo tuplas en el `flatMap`. Se considera `(feed, error)` donde uno es, sí o sí, `null`. Esto es para dividir los casos
+- Se filtra de la lista de tuplas por un lado los feeds y por otro los errores
+- Ahora hay dos casos dependiendo del parámetro que se haya pasado para ejecutar el programa
+	- Si tengo que imprimir normal, para cada feed hago `prettyPrint`
+	- Si tengo que hacer las heurísticas, lo que se realiza es:
+		- Crear el objeto de la heurística
+		- Se obtiene la lista de artículos para cada feed
+		- Se computan las namedEntities para cada feed y se obtiene la lista de estas para todos los artículos de todos los feeds
+		- Se muestran por pantalla las entidades nombradas
+- Se imprimen los errores en caso que haya habido
+
+Esto se realizó de forma sencilla teniendo en cuenta que:
+
+- Para realizar concurrencia, los elementos que se usen deben implementar la clase `Serializable`, lo cual implica que se puede convertir en una secuencia de bytes que pueden ser leídos posteriormente para restaurar el objeto original.
+	- Esto se usa para guardar el estado del objeto y poder transmitirlo fácilmente (cuando se comparte a los nodos como es el caso de las clases de las heurísticas, simpleSubcriptions, Feed, por ejemplo)
+- La concurrencia se hace en la parte de las transformaciones de los objetos RDD (o iterables) que se utilizan en el programa
+	- Esto implica que se hace fuerte uso de `flatMap` y de `filter` (este solo para separar entre feed y errores)
+	- Hay que tener en cuenta que como esto se aplica en cada nodo de forma aparte y Spark funciona para que, si uno tuvo un error o se cayó, otro pueda hacer la tarea; entonces jamás se puede tener una excepción sin catchear dentro de la función
+		- Por ello, siempre devuelven algo. En el caso particular en el que se usan, es para crear la lista de errores a mostrar al final del programa
+		- Esto permite que las transformaciones se hagan de forma lazy hasta tanto se invoque a una acción
+- Dada la naturaleza del feedReader, las únicas acciones que se hacen con los objetos de Spark son: mostrar por pantalla (con un `foreach`) y contar la cantidad (para saber si imprimo o no errores, con un `count`).
 
 ## ¿Cómo se integra una estructura ordenada a objetos con la estructura funcional de map-reduce?
