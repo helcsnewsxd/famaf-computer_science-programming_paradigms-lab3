@@ -8,13 +8,22 @@ Para ello, veamos todos los puntos a considerar en el desarrollo planteados por 
 
 ## Índice de puntos considerados
 
-### **_FALTA_**
+- [Qué herramientas se utilizaron?](#qué-herramientas-se-utilizaron)
+- [Cómo instalar las herramientas usadas?](#cómo-instalar-las-herramientas-usadas)
+    - [Spark](#spark)
+    - [Maven](#maven)
+    - [IntelliJ IDEA](#intellij-idea)
+- [Cómo debe ser un proyecto de Spark con Java y cómo se corre?](#cómo-debe-ser-un-proyecto-de-spark-con-java-y-cómo-se-corre)
+- [Qué estructura tiene un programa en Spark?](#qué-estructura-tiene-un-programa-en-spark)
+- [Qué estructura tiene un programa de conteo de palabras en diferentes documentos en Spark?](#qué-estructura-tiene-un-programa-de-conteo-de-palabras-en-diferentes-documentos-en-spark)
+- [Cómo adaptar el código del Laboratorio 2 a la estructura del programa objetivo en Spark?](#cómo-adaptar-el-código-del-laboratorio-2-a-la-estructura-del-programa-objetivo-en-spark)
+- [Cómo se integra una estructura ordenada a objetos con la estructura funcional de map-reduce?](#cómo-se-integra-una-estructura-ordenada-a-objetos-con-la-estructura-funcional-de-map-reduce)
 
-## ¿Qué herramientas se utilizaron?
+## Qué herramientas se utilizaron?
 
 En el presente laboratorio se utilizaron como herramientas _fundamentales_ Spark (porque es el objetivo del proyecto), Maven (para tener un buen manejo de las dependencias a utilizar, tanto de Spark como de JSON) e IntelliJ IDEA (en base a recomendación de mi compañero Guille y de los pros que tiene respecto a VSCode, dado que es una herramienta creada para desarrollo puro de Java).
 
-## ¿Cómo instalar las herramientas usadas?
+## Cómo instalar las herramientas usadas?
 
 ### Spark
 
@@ -104,7 +113,7 @@ La instalación de este IDE fue **extremadamente sencilla**. Simplemente se tuvo
 sudo snap install intellij-idea-community --classic
 ```
 
-## ¿Cómo debe ser un proyecto de Spark con Java y cómo se corre?
+## Cómo debe ser un proyecto de Spark con Java y cómo se corre?
 
 Para presentar la estructura que debe tener un programa y un proyecto realizado en Spark, se va a utilizar el [ejemplo de java presente en la documentación](https://spark.apache.org/docs/latest/quick-start.html#self-contained-applications).
 
@@ -188,7 +197,7 @@ Finalmente, entonces, para poder compilar y correr este proyecto, se debe hacer 
 
 Respecto a mi caso en particular, al estar usando Intellij IDEA, se siguieron las recomendaciones dadas por la [documentación de developer-tools](https://spark.apache.org/developer-tools.html).
 
-## ¿Qué estructura tiene un programa en Spark?
+## Qué estructura tiene un programa en Spark?
 
 Dado que la idea del framework Spark es cálculo distribuido, la estructura del sistema distribuido es:
 
@@ -206,7 +215,7 @@ Por ello mismo, en este caso que se usa Java, lo que se requiere como estructura
 
 Este es un esquema general de cómo es la estructura de los programas de Spark, más que nada, relacionados a la tarea que debemos realizar en este proyecto.
 
-## ¿Qué estructura tiene un programa de conteo de palabras en diferentes documentos en Spark?
+## Qué estructura tiene un programa de conteo de palabras en diferentes documentos en Spark?
 
 Un programa de conteo de palabras de **diferentes** documentos es, básicamente, una generalización de [este ejemplo brindado por Spark](https://github.com/apache/spark/blob/master/examples/src/main/java/org/apache/spark/examples/JavaWordCount.java).
 Por ello mismo, entonces, el programa sería el siguiente:
@@ -276,11 +285,11 @@ public final class SimpleApp {
 
 En este caso, a diferencia del ejemplo provisto por Spark para un solo archivo, se decidió usar el `BufferedReader` para paralelizar la lectura de los diferentes archivos.
 
-## ¿Cómo adaptar el código del Laboratorio 2 a la estructura del programa objetivo en Spark?
+## Cómo adaptar el código del Laboratorio 2 a la estructura del programa objetivo en Spark?
 
-En la adaptación del código del Laboratorio 2, se consideró (obviamente) que el driver se crea y reside en el `Main.java` mientras va enviando tareas a los worker nodes. Si bien en el código está bien explicada cada parte con comentarios, aquí va a mencionarse nuevamente.
+En la adaptación del código del Laboratorio 2, se consideró (obviamente) que el driver se crea y reside en el `Main.java` mientras va enviando tareas a los worker nodes. Si bien en el código está bien explicada cada parte con comentarios, aquí va a mencionarse nuevamente. 
 
-El esquema que se consideró fue:
+El esquema que se consideró fue (**haciendo el PUNTO EXTRA de integrar en estructura map-reduce la obtención de feeds**):
 
 - Validar los argumentos (en caso que no sean válidos, imprimo una ayuda y termino)
 - Hacer las configuraciones para usar Spark (SparkConf y JavaSparkContext)
@@ -310,4 +319,27 @@ Esto se realizó de forma sencilla teniendo en cuenta que:
 		- Esto permite que las transformaciones se hagan de forma lazy hasta tanto se invoque a una acción
 - Dada la naturaleza del feedReader, las únicas acciones que se hacen con los objetos de Spark son: mostrar por pantalla (con un `foreach`) y contar la cantidad (para saber si imprimo o no errores, con un `count`).
 
-## ¿Cómo se integra una estructura ordenada a objetos con la estructura funcional de map-reduce?
+## Cómo se integra una estructura ordenada a objetos con la estructura funcional de map-reduce?
+
+Para realizar la combinación de estos _dos mundos_, tenemos que estructurar la idea de cómo se va a plantear el código para maximizar lo que nos brinda cada parte:
+
+- Procesamiento en paralelo (map-reduce) dividiendo datos en fragmentos más pequeños
+- Encapsulamiento y secuenciación para preservar relación y orden entre objetos durante el procesamiento
+
+Por ello mismo, entonces, queremos combinar estos dos conceptos: el de programación funcional de Map-Reduce con el diseño orientado a objetos, para mantener la estructura ordenada mientras se aprovecha el procesamiento en paralelo y la escalabilidad de Map-Reduce.
+
+Como consecuencia, lo que se tiene que tener en cuenta es:
+
+- ¿Cómo debe ser el orden y qué se va a usar para ello?
+	- Determina qué atributo o conjunto de estos se va a usar para establecer el orden de los objetos
+- Fase de mapeo
+	- Cada objeto se asigna a una clave de ordenación utilizando la función de map. La clave de ordenación y el objeto se emiten como pares clave-valor
+	- En este caso, la clave sería el valor del atributo de ordenación y el valor sería el objeto en sí
+- Fase de ordenación
+	- Los pares clave-valor generados en la fase de mapeo se ordenan según la clave de ordenación (garantiza que los objetos se agrupen de acuerdo con su orden definido)
+- Fase de reducción
+	- Los objetos se procesan en función de su orden
+
+En esta primera parte se pueden observar todos estos conceptos más que nada en la sección del _wordCounter_ de diferentes archivos. Respecto a dónde se vería reflejado fielmente en el proyecto actual, sería en la parte grupal cuando se ordenen los artículos en base al criterio que se establece desde un principio (las palabras que se seleccionaron para buscar).
+
+- En los dos casos, la función de ordenación es la suma de las ocurrencias. En uno de las palabras y en el otro de las entidades seleccionadas
