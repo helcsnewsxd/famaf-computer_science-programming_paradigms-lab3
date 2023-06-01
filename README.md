@@ -278,11 +278,7 @@ En este caso, a diferencia del ejemplo provisto por Spark para un solo archivo, 
 
 ## ¿Cómo adaptar el código del Laboratorio 2 a la estructura del programa objetivo en Spark?
 
-El proceso de adaptación del código del Laboratorio 2 se dividió en varias partes dependiendo de la _importancia_ o _profundidad_ que cada una tiene en el funcionamiento del proyecto. 
-Si bien en el código está bien explicada cada parte con comentarios, aquí va a mencionarse nuevamente. 
-Se consideraron las siguientes partes:
-
-### Adaptación general (en Main.java)
+En la adaptación del código del Laboratorio 2, se consideró (obviamente) que el driver se crea y reside en el `Main.java` mientras va enviando tareas a los worker nodes. Si bien en el código está bien explicada cada parte con comentarios, aquí va a mencionarse nuevamente.
 
 El esquema que se consideró fue:
 
