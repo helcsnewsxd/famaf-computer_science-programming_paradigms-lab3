@@ -228,7 +228,7 @@ import java.util.List;
 public final class SimpleApp {
     public static void main(String @NotNull [] args) {
         if(args.length == 0) {
-            System.out.println("Usage: JavaWordCount <file>");
+            System.out.println("Usage: JavaWordCount <file1> <file2> ...");
             System.exit(1);
         }
 
