@@ -1,15 +1,23 @@
 package feed;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 
 import namedEntity.entities.NamedEntity;
 import namedEntity.entities_themes.OtherEntityOtherThemes;
 import namedEntity.heuristic.Heuristic;
+import scala.Tuple2;
+import subscriptions.SparkContextHolder;
 
-public class Article {
+public class Article implements Serializable{
     private String title;
     private String text;
     private Date publicationDate;
@@ -76,7 +84,10 @@ public class Article {
         return null;
     }
 
-    public void computeNamedEntities(Heuristic h) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+    public void computeNamedEntities(Heuristic h, SparkContextHolder sparkHolder) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        
+        JavaSparkContext sparkContext = sparkHolder.getSparkContext();
+
         String text = this.getTitle() + " " + this.getText();
 
         String charsToRemove = ".,;:()'!?\n";
@@ -84,26 +95,31 @@ public class Article {
             text = text.replace(String.valueOf(c), "");
         }
 
+        JavaRDD<String> wordsRDD = sparkContext.parallelize(Arrays.asList(text.split(" ")));
+        
+        JavaPairRDD<String, Integer> entityWordsRDD = wordsRDD
+            .filter(s -> h.isEntity(s))
+            .mapToPair(s -> new Tuple2<>(s, 1))
+            .reduceByKey((freq1, freq2) -> freq1 + freq2);
 
-        for (String s : text.split(" ")) {
-            if (h.isEntity(s)) {
-                NamedEntity ne = this.getNamedEntity(s);
-                if (ne == null) {
-                    Class<? extends NamedEntity> categoryClass = h.getCategory(s);
-                    // Si no hay clasificacion definida para esta named entity, su tipo sera 
-                    // generico.
-                    if(categoryClass == null) {
-                        categoryClass = OtherEntityOtherThemes.class;
-                    }
-                    ne = categoryClass.getDeclaredConstructor().newInstance();
-                    ne.setFrequency(1);
-                    ne.setName(s);
-                    this.namedEntityList.add(ne);
-                } else {
-                    ne.incFrequency();
+            JavaRDD<NamedEntity> namedEntitiesRDD = entityWordsRDD.map(tuple -> {
+            String name = tuple._1();
+            NamedEntity ne = this.getNamedEntity(name);
+
+            if (ne == null){
+                Class<? extends NamedEntity> categoryClass = h.getCategory(name);
+                if(categoryClass == null) {
+                    categoryClass = OtherEntityOtherThemes.class;
                 }
+                ne = categoryClass.getDeclaredConstructor().newInstance();
+                ne.setFrequency(tuple._2());
+                ne.setName(name);
             }
-        }
+            return ne;
+        });
+
+        List<NamedEntity> namedEntities = namedEntitiesRDD.collect();
+        this.namedEntityList.addAll(namedEntities);
     }
 
     public void prettyPrint() {

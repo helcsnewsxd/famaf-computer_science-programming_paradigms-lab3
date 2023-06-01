@@ -1,10 +1,11 @@
 package feed;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Feed {
+public class Feed implements Serializable {
     String siteName;
     List<Article> articleList;
 

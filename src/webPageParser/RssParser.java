@@ -14,6 +14,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,7 +22,7 @@ import java.util.Date;
 
 import java.util.Locale;
 
-public class RssParser extends GeneralParser {
+public class RssParser extends GeneralParser implements Serializable {
     public Feed parse(String content) throws ParserConfigurationException, IOException, SAXException, ParseException {
         Feed feed = new Feed("Unnamed Feed");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

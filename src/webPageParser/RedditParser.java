@@ -4,6 +4,8 @@ import feed.Article;
 import feed.Feed;
 import org.json.JSONTokener;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.sql.Date;
 
@@ -11,8 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 
-public class RedditParser extends GeneralParser{
-    public Feed parse(String content) throws EmptyFeedException {
+public class RedditParser extends GeneralParser implements Serializable{
+    public Feed parse(String content) throws EmptyFeedException, IOException {
         // return null;
         Feed feed = new Feed("Unnamed Feed");
         StringReader reader = new StringReader(content);
@@ -32,7 +34,7 @@ public class RedditParser extends GeneralParser{
             JSONObject article = articles.getJSONObject(i).getJSONObject("data");
 
             String title = article.getString("title");
-            Number timestamp = article.getNumber("created");
+            Number timestamp = article.getInt("created");
             String text = article.getString("selftext");
             String link = article.getString("url");
 

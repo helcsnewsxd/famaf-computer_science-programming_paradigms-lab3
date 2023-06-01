@@ -1,19 +1,22 @@
 package subscriptions;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+
+import java.lang.reflect.Type;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 import webPageParser.RedditParser;
 import webPageParser.RssParser;
 
-public class Subscriptions {
+public class Subscriptions implements Serializable {
     private List<SimpleSubscription> subscriptionsList;
 
     // INITIALIZATION
@@ -56,33 +59,62 @@ public class Subscriptions {
         System.out.println(this.toString());
     }
 
-    public void parse(String subscriptionsFilePath) throws FileNotFoundException, JSONException {
+    private static class Subscription {
+        private String url;
+        private List<String> urlParams;
+        private String urlType;
 
-        FileReader reader = new FileReader(subscriptionsFilePath);
+        public String getUrl() {
+            return url;
+        }
 
-        JSONTokener token = new JSONTokener(reader);
-        JSONArray arr = new JSONArray(token);
+        public List<String> getUrlParams() {
+            return urlParams;
+        }
 
-        for (int i = 0, szi = arr.length(); i < szi; i++) {
-            JSONObject obj = arr.getJSONObject(i);
+        public String getUrlType() {
+            return urlType;
+        }
+    }
+
+    public void parse(String subscriptionsFilePath, SparkContextHolder sparkHolder) throws FileNotFoundException, JSONException {
+
+        JavaSparkContext sparkContext = sparkHolder.getSparkContext();
+
+        JavaRDD<String> jsonData = sparkContext.wholeTextFiles(subscriptionsFilePath).values();
+
+        JavaRDD<Subscription> subscriptionsRDD = jsonData.flatMap(json -> {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<Subscription>>() {}.getType();
+            List<Subscription> subscriptions = gson.fromJson(json, type);
+            return subscriptions.iterator();
+        });
+
+        // Extract the required fields
+        JavaRDD<SimpleSubscription> simpleSubscriptionsRDD = subscriptionsRDD.map(subscription -> {
+            String url = subscription.getUrl();
+            String urlType = subscription.getUrlType();
+            List<String> urlParams = subscription.getUrlParams();
 
             SimpleSubscription simpleSubscription = new SimpleSubscription();
-            simpleSubscription.setUrl(obj.getString("url"));
-            String urlType = obj.getString("urlType");
+            simpleSubscription.setUrl(url);
             simpleSubscription.setUrlType(urlType);
 
-            // Inyectar parser adecuado
-            if(urlType.equals("rss")) {
+            if (urlType.equals("rss")) {
                 simpleSubscription.setParser(new RssParser());
-            } else if(urlType.equals("reddit")) {
+            } else if (urlType.equals("reddit")) {
                 simpleSubscription.setParser(new RedditParser());
             }
 
-            JSONArray arrUrlParams = obj.getJSONArray("urlParams");
-            for (int j = 0, szj = arrUrlParams.length(); j < szj; j++) {
-                simpleSubscription.addUrlParameter(arrUrlParams.getString(j));
+            for (String param : urlParams) {
+                simpleSubscription.addUrlParameter(param);
             }
 
+            return simpleSubscription;
+        });
+
+        List<SimpleSubscription> simpleSubscriptions = simpleSubscriptionsRDD.collect();
+        for (SimpleSubscription simpleSubscription : simpleSubscriptions) {
             this.addSimpleSubscription(simpleSubscription);
         }
     }
