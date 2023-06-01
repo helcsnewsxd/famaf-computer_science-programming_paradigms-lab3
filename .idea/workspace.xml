@@ -6,16 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="638e3b4b-240c-425e-8d93-70e2962135cd" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/feed/Article.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/feed/Article.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/httpRequest/HTTPRequester.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/httpRequest/HTTPRequester.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/feed/Feed.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/feed/Feed.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/namedEntity/heuristic/Heuristic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/namedEntity/heuristic/Heuristic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/namedEntity/heuristic/QuickHeuristic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/namedEntity/heuristic/QuickHeuristic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/namedEntity/heuristic/RandomHeuristic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/namedEntity/heuristic/RandomHeuristic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/namedEntity/themes/Theme.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/namedEntity/themes/Theme.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/subscriptions/SimpleSubscription.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/subscriptions/SimpleSubscription.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/subscriptions/Subscriptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/subscriptions/Subscriptions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/webPageParser/RedditParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webPageParser/RedditParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/webPageParser/GeneralParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/webPageParser/GeneralParser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,7 +45,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "herrador__emanuel__nicolas",
     "last_opened_file_path": "/home/emanuel-nicolas-herrador/Documentos/FaMAF/grupo27_lab03_2023",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.importing"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RunManager">
@@ -77,5 +73,9 @@
       <updated>1685593954386</updated>
     </task>
     <servers />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

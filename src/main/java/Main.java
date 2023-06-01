@@ -1,23 +1,24 @@
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import javax.xml.parsers.ParserConfigurationException;
+import feed.Feed;
+import httpRequest.HttpRequestException;
+import httpRequest.InvalidUrlTypeToFeedException;
+import namedEntity.heuristic.Heuristic;
+import namedEntity.heuristic.QuickHeuristic;
+import namedEntity.heuristic.RandomHeuristic;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.xml.sax.SAXException;
-import java.util.List;
-import java.util.ArrayList;
-
+import scala.Tuple2;
 import subscriptions.SimpleSubscription;
 import subscriptions.Subscriptions;
 import webPageParser.EmptyFeedException;
-import httpRequest.InvalidUrlTypeToFeedException;
-import httpRequest.HttpRequestException;
-import namedEntity.entities.NamedEntity;
-import namedEntity.heuristic.Heuristic;
-import namedEntity.heuristic.QuickHeuristic;
-import feed.Article;
-import feed.Feed;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Main {
     private static final String subscriptionsFilePath = "config/subscriptions.json";
@@ -26,91 +27,119 @@ public class Main {
         System.out.println("Please, call this program in correct way: FeedReader [-ne]");
     }
 
-    public static void main(String[] args) throws FileNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        System.out.println("************* FeedReader version 1.0 *************");
-        if (args.length > 1 || (args.length == 1 && !args[0].equals("-ne")))
+    public static void main(String[] args) throws FileNotFoundException {
+        System.out.println("************* FeedReader version 2.0 (Spark) *************");
+
+        if (args.length > 1 || (args.length == 1 && !args[0].equals("-ne"))) {
             printHelp();
-        else {
-            boolean normalPrint = args.length == 0;
-
-            // List of errors
-            List<String> subscriptionErrors = new ArrayList<>();
-
-            // Get subscriptions
-            Subscriptions subscriptions = new Subscriptions();
-            subscriptions.parse(subscriptionsFilePath);
-
-            for (int i = 0, szi = subscriptions.getSubscriptionListSize(); i < szi; i++) {
-                SimpleSubscription simpleSubscription = subscriptions.getSubscriptionList(i);
-
-                for (int j = 0, szj = simpleSubscription.getUrlParametersSize(); j < szj; j++) {
-                    try {
-                        Feed feed = simpleSubscription.parse(j);
-
-                        if (normalPrint) {
-                            // Print feed to user
-
-                            feed.prettyPrint();
-                        } else {
-                            // heuristic in use
-                            Heuristic heuristicUsed = new QuickHeuristic();
-
-
-                            // computes the named entities for each article, saving all named entities in their respective lists
-                            for (Article article : feed.getArticleList()) {
-                                article.computeNamedEntities(heuristicUsed);
-                                for (NamedEntity namedEntity : article.getNamedEntityList()) {
-                                    System.out.println(namedEntity.getName());
-                                    System.out.println(namedEntity.getFrequency());
-                                    System.out.println(namedEntity.getCategory());
-                                    System.out.println(namedEntity.getTheme());
-                                    System.out.println(namedEntity.getClass().toString());
-                                    System.out.println("-----------");
-                                }
-                            }
-                        }
-
-                    } catch (InvalidUrlTypeToFeedException e) {
-                        subscriptionErrors.add(
-                                    "Invalid URL Type to get feed in "
-                                            + simpleSubscription.getFormattedUrlForParameter(j));
-                    } catch (HttpRequestException e) {
-                        subscriptionErrors.add(
-                                    "Error in connection: " + e.getMessage() + " "
-                                            + simpleSubscription.getFormattedUrlForParameter(j));
-                    } catch (EmptyFeedException e) {
-                        subscriptionErrors.add(
-                                    "Empty Feed in "
-                                            + simpleSubscription.getFormattedUrlForParameter(j));
-                    } catch (MalformedURLException e) {
-                        subscriptionErrors.add(
-                                "Malformed URL exception in subscription "
-                                        + simpleSubscription.getFormattedUrlForParameter(j));
-                    } catch (IOException e) {
-                        subscriptionErrors.add(
-                                "IO exception in subscription " + simpleSubscription.getFormattedUrlForParameter(j));
-                    } catch (ParserConfigurationException | ParseException e) {
-                        subscriptionErrors.add(
-                                "Parse error in "
-                                        + simpleSubscription.getFormattedUrlForParameter(j));
-                    } catch (SAXException e) {
-                        subscriptionErrors.add(
-                                "SAX Exception in "
-                                        + simpleSubscription.getFormattedUrlForParameter(j));
-                    }
-                }
-            }
-
-            // Print errors
-            if (subscriptionErrors.size() != 0) {
-                System.out.println("==================================================");
-                System.out.println(
-                        "There was a total of " + subscriptionErrors.size() + " errors in the creation of the Feeds:");
-                for (String s : subscriptionErrors) {
-                    System.out.print("  - ");
-                    System.out.println(s);
-                }
-            }
+            return;
         }
+
+        // Configuración de Spark
+        SparkConf sparkConf = new SparkConf()
+                .setAppName("feedReader")
+                .setMaster("local[*]");
+
+        JavaSparkContext spark = new JavaSparkContext(sparkConf);
+
+        boolean normalPrint = args.length == 0;
+
+        Subscriptions subscriptions = new Subscriptions();
+        subscriptions.parse(subscriptionsFilePath);
+
+        // Paralelizo la lista de las subscripciones para hacerlo de forma concurrente
+        var subscriptionList = spark.parallelize(subscriptions.getSubscriptionList());
+
+        // Obtengo todos los feeds
+        // Se consideran tuplas (feed, error). Una es null y la otra es dato (se usa
+        // para diferenciar)
+        var feeds = subscriptionList
+                // Separo las subscripciones por sus parámetros
+                .flatMap(simpleSubscription -> {
+                    List<Tuple2<SimpleSubscription, Integer>> feedConstructorOptionsList = new ArrayList<>();
+                    for (int i = 0, szi = simpleSubscription.getUrlParametersSize(); i < szi; i++)
+                        feedConstructorOptionsList.add(new Tuple2<>(simpleSubscription, i));
+                    return feedConstructorOptionsList.iterator();
+                })
+                // Obtengo el feed en base a los parámetros considerados (subscripción y
+                // urlParameter)
+                // Se devuelve en el formato (feed, error) siendo solo una null en cada tupla
+                .flatMap(feedOptions -> {
+                    try {
+                        Feed actualFeed = feedOptions._1().parse(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(actualFeed, null)).iterator();
+                    } catch (InvalidUrlTypeToFeedException e) {
+                        String actualError = "Invalid URL Type to get feed in "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    } catch (IOException e) {
+                        String actualError = "IO exception in subscription "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    } catch (HttpRequestException e) {
+                        String actualError = "Error in connection: " + e.getMessage() + " "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    } catch (ParserConfigurationException | ParseException e) {
+                        String actualError = "Parse error in "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    } catch (SAXException e) {
+                        String actualError = "SAX Exception in "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    } catch (EmptyFeedException e) {
+                        String actualError = "Empty Feed in "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    }
+                });
+
+        // Preparo la lista de feeds obtenidos
+        var feedList = feeds
+                .filter(actualFeed -> actualFeed._1() != null)
+                .flatMap(actualFeed -> Collections.singletonList(actualFeed._1()).iterator());
+
+        // Preparo la lista de errores que sucedieron
+        var errorList = feeds
+                .filter(actualFeed -> actualFeed._2() != null)
+                .flatMap(actualFeed -> Collections.singletonList(actualFeed._2()).iterator());
+
+        if (normalPrint) {
+            // Muestra los feeds al usuario
+            feedList.foreach(Feed::prettyPrint);
+        } else {
+            // Heurística en uso
+            Heuristic heuristicUsed = new QuickHeuristic();
+
+            var namedEntities = feedList
+                    // Obtengo todos los artículos
+                    .flatMap(feed -> feed.getArticleList().iterator())
+                    // Obtengo las namedEntity
+                    .flatMap(article -> {
+                        article.computeNamedEntities(heuristicUsed);
+                        return article.getNamedEntityList().iterator();
+                    });
+
+            // Muestro las namedEntity en pantalla
+            namedEntities.foreach(namedEntity -> {
+                System.out.println(namedEntity.getName());
+                System.out.println(namedEntity.getFrequency());
+                System.out.println(namedEntity.getCategory());
+                System.out.println(namedEntity.getTheme());
+                System.out.println(namedEntity.getClass().toString());
+                System.out.println("-----------");
+            });
+        }
+
+        // Imprimo los errores en caso que haya habido
+        if (!errorList.isEmpty()) {
+            System.out.println("==================================================");
+            System.out.println(
+                    "There was a total of " + errorList.count() + " errors in the creation of the Feeds:");
+            errorList.foreach(error -> System.out.println("  - " + error));
+        }
+
+        spark.close();
     }
 }
