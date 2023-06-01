@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="638e3b4b-240c-425e-8d93-70e2962135cd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/feed/Article.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/feed/Feed.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/httpRequest/HTTPRequester.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/httpRequest/HttpRequestException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/httpRequest/InvalidUrlTypeToFeedException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/NamedEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/Company.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/Date.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/Event.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/OtherEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/Person.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/Place.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/Product.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/personSubclass/Firstname.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/personSubclass/Lastname.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/personSubclass/Occupation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/placeSubclass/Address.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/placeSubclass/City.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities/entity_classes/placeSubclass/Country.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressPolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressSport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AddressTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/AutomaticCreation.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityPolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CitySport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CityTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyPolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanySport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CompanyTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryPolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountrySport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/CountryTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DatePolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateSport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/DateTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventPolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventSport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/EventTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnamePolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameSport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/FirstnameTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnamePolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameSport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/LastnameTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationPolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationSport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OccupationTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityPolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntitySport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/OtherEntityTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonPolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonSport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PersonTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlacePolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceSport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/PlaceTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductBasket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductCinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductCulture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductFootball.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductFormula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductInternational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductMusic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductNational.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductOtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductPolitics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductSport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/entities_themes/ProductTennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/heuristic/Heuristic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/heuristic/QuickHeuristic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/heuristic/RandomHeuristic.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/Theme.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/Culture.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/OtherThemes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/Politics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/Sport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/cultureSubclass/Cinema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/cultureSubclass/Music.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/politicsSubclass/International.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/politicsSubclass/National.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/sportSubclass/Basket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/sportSubclass/Football.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/sportSubclass/Formula1.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/namedEntity/themes/themes_classes/sportSubclass/Tennis.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/subscriptions/SimpleSubscription.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/subscriptions/Subscriptions.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/webPageParser/EmptyFeedException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/webPageParser/GeneralParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/webPageParser/RedditParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/webPageParser/RssParser.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="2" />
+  </component>
+  <component name="ProjectId" id="2Qaa45Tuk4Ok43gz55cLY6ykwSo" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "herrador__emanuel__nicolas",
+    "last_opened_file_path": "/home/emanuel-nicolas-herrador/Documentos/FaMAF/grupo27_lab03_2023",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.importing"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="feedReader" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="feedReader" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="638e3b4b-240c-425e-8d93-70e2962135cd" name="Changes" comment="" />
+      <created>1685593954386</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1685593954386</updated>
+    </task>
+    <servers />
+  </component>
+</project>
