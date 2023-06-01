@@ -23,6 +23,8 @@ Para ello, veamos todos los puntos a considerar en el desarrollo planteados por 
 
 En el presente laboratorio se utilizaron como herramientas _fundamentales_ Spark (porque es el objetivo del proyecto), Maven (para tener un buen manejo de las dependencias a utilizar, tanto de Spark como de JSON) e IntelliJ IDEA (en base a recomendación de mi compañero Guille y de los pros que tiene respecto a VSCode, dado que es una herramienta creada para desarrollo puro de Java).
 
+Respecto a la herramienta que se usó para hacer el informe (no para desarrollar el proyecto), esta fue **Obsidian**. Por ello, se agrega la opción de poder leer este informe en formato PDF (al cual exporta Obsidian) en el siguiente [archivo](Informe%20Individual%20-%20Emanuel%20Nicol%C3%A1s%20Herrador.pdf)
+
 ## Cómo instalar las herramientas usadas?
 
 ### Spark
