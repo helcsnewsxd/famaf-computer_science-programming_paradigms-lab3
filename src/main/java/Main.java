@@ -43,6 +43,9 @@ public class Main {
 
         JavaSparkContext spark = new JavaSparkContext(sparkConf);
 
+        // Deshabilitar los LOGS de INFO (porque ya anda bien)
+        spark.setLogLevel("ERROR");
+
         boolean normalPrint = args.length == 0;
 
         Subscriptions subscriptions = new Subscriptions();
