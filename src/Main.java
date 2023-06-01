@@ -94,7 +94,7 @@ public class Main implements Serializable {
             });
 
             
-            if (!normalPrint) {
+            if (normalPrint) {
                 // Print feed to user
                 feedsRDD.foreach(feed -> feed.prettyPrint());
             } else {
