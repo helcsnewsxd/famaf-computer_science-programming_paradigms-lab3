@@ -7,6 +7,7 @@ import namedEntity.heuristic.RandomHeuristic;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.SparkSession;
 import org.xml.sax.SAXException;
 import scala.Tuple2;
 import subscriptions.SimpleSubscription;
@@ -36,19 +37,21 @@ public class Main {
             return;
         }
 
-        // Configuración de Spark
-        SparkConf sparkConf = new SparkConf()
-                .setAppName("feedReader")
-                .setMaster("local[*]");
+        // Configuración de la sesión de Spark
+        SparkSession sparkSession = SparkSession
+                .builder()
+                .appName("feedReader")
+                .master("local[100]")
+                .getOrCreate();
 
-        JavaSparkContext spark = new JavaSparkContext(sparkConf);
+        JavaSparkContext spark = new JavaSparkContext(sparkSession.sparkContext());
 
         // Deshabilitar los LOGS de INFO (porque ya anda bien)
         spark.setLogLevel("ERROR");
 
         boolean normalPrint = args.length == 0;
 
-        Subscriptions subscriptions = new Subscriptions();
+        Subscriptions subscriptions = new Subscriptions(sparkSession);
         subscriptions.parse(subscriptionsFilePath);
 
         // Paralelizo la lista de las subscripciones para hacerlo de forma concurrente
@@ -145,5 +148,6 @@ public class Main {
         }
 
         spark.close();
+        sparkSession.close();
     }
 }
