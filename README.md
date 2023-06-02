@@ -321,6 +321,16 @@ Esto se realizó de forma sencilla teniendo en cuenta que:
 		- Esto permite que las transformaciones se hagan de forma lazy hasta tanto se invoque a una acción
 - Dada la naturaleza del feedReader, las únicas acciones que se hacen con los objetos de Spark son: mostrar por pantalla (con un `foreach`) y contar la cantidad (para saber si imprimo o no errores, con un `count`).
 
+
+### Implementación final
+
+Para poder seguir paralelizando más en otros objetos y clases, requerimos tener alguna forma de "pasarles" a estos el "manejador" de Spark. Por ello mismo, para poder realizar esto, usé la herramienta **SparkSession** que habilita esta opción y está disponible en versiones más nuevas de Spark.
+
+Por ello mismo, teniendo en cuenta esto y pasando la sesión a los diferentes objetos, se ha realizado también lo siguiente (se suma a lo hecho en la 1era aproximación):
+
+- **Subscriptions.java**: se agrega la paralelización del parseo de los JSONObjects, creación de las SimpleSubscriptions y su instanciación
+- **Compute Named Entities**: se probó agregar la paralelización para el conteo de las entidades nombradas pero dado que tardaba entre 2 o 3 veces más que la implementación anterior, decidí no considerar esta opción
+
 ## Cómo se integra una estructura ordenada a objetos con la estructura funcional de map-reduce?
 
 Para realizar la combinación de estos _dos mundos_, tenemos que estructurar la idea de cómo se va a plantear el código para maximizar lo que nos brinda cada parte:
