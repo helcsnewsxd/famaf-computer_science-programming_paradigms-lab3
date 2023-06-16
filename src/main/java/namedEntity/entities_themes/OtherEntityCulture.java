@@ -1,11 +1,9 @@
 package namedEntity.entities_themes;
 
-import java.io.Serializable;
-
 import namedEntity.entities.entity_classes.OtherEntity;
 import namedEntity.themes.themes_classes.Culture;
 
-public class OtherEntityCulture extends OtherEntity implements Culture, Serializable {
+public class OtherEntityCulture extends OtherEntity implements Culture {
 
     public OtherEntityCulture(String name, String category, int frequency) {
         super(name, category, frequency);

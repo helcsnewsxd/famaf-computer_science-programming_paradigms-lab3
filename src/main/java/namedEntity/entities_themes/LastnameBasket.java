@@ -1,11 +1,9 @@
 package namedEntity.entities_themes;
 
-import java.io.Serializable;
-
 import namedEntity.entities.entity_classes.personSubclass.Lastname;
 import namedEntity.themes.themes_classes.sportSubclass.Basket;
 
-public class LastnameBasket extends Lastname implements Basket, Serializable {
+public class LastnameBasket extends Lastname implements Basket {
 
     public LastnameBasket(String name, String category, int frequency) {
         super(name, category, frequency);

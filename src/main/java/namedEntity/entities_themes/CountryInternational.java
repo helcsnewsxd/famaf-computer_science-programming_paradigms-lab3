@@ -1,11 +1,9 @@
 package namedEntity.entities_themes;
 
-import java.io.Serializable;
-
 import namedEntity.entities.entity_classes.placeSubclass.Country;
 import namedEntity.themes.themes_classes.politicsSubclass.International;
 
-public class CountryInternational extends Country implements International, Serializable {
+public class CountryInternational extends Country implements International {
 
     public CountryInternational(String name, String category, int frequency) {
         super(name, category, frequency);
