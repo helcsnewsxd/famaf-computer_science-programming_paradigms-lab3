@@ -126,6 +126,7 @@ public class Main {
         // CASOS DE EJECUCIÓN
         if (normalPrint) {
             // Obtener el input de búsqueda sobre los feeds por parte del usuario
+            System.out.println("=====================  ¿Qué quiere buscar? Escríbalo en una oración y aprete Enter =====================");
             Scanner scanner = new Scanner(System.in);
             String rawSearchTerms = scanner.nextLine();
             Set<String> searchTerms = new java.util.HashSet<>(Collections.emptySet());
@@ -134,7 +135,8 @@ public class Main {
             Collections.addAll(searchTerms, terms);
 
             scanner.close();
-            
+            System.out.println("===================== Solicitud recibida con éxito. La estamos procesando. =====================");
+                        
             // Ordeno los artículos en base a lo buscado por el usuario
             List<Article> sortedArticles = articleList
                     // Obtengo pares (artículo, entidad)
