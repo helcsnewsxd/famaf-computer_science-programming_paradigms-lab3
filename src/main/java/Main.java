@@ -71,46 +71,46 @@ public class Main {
                 // Obtengo el feed en base a los parámetros considerados (subscripción y
                 // urlParameter)
                 // Se devuelve en el formato (feed, error) siendo solo una null en cada tupla
-                .flatMap(feedOptions -> {
+                .map(feedOptions -> {
                     try {
                         Feed actualFeed = feedOptions._1().parse(feedOptions._2());
-                        return Collections.singletonList(new Tuple2<Feed, String>(actualFeed, null)).iterator();
+                        return new Tuple2<Feed, String>(actualFeed, null);
                     } catch (InvalidUrlTypeToFeedException e) {
                         String actualError = "Invalid URL Type to get feed in "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                        return new Tuple2<Feed, String>(null, actualError);
                     } catch (IOException e) {
                         String actualError = "IO exception in subscription "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                        return new Tuple2<Feed, String>(null, actualError);
                     } catch (HttpRequestException e) {
                         String actualError = "Error in connection: " + e.getMessage() + " "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                        return new Tuple2<Feed, String>(null, actualError);
                     } catch (ParserConfigurationException | ParseException e) {
                         String actualError = "Parse error in "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                        return new Tuple2<Feed, String>(null, actualError);
                     } catch (SAXException e) {
                         String actualError = "SAX Exception in "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                        return new Tuple2<Feed, String>(null, actualError);
                     } catch (EmptyFeedException e) {
                         String actualError = "Empty Feed in "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                        return new Tuple2<Feed, String>(null, actualError);
                     }
                 });
 
         // Preparo la lista de feeds obtenidos
         JavaRDD<Feed> feedList = feeds
                 .filter(actualFeed -> actualFeed._1() != null)
-                .flatMap(actualFeed -> Collections.singletonList(actualFeed._1()).iterator());
+                .map(Tuple2::_1);
 
         // Preparo la lista de errores que sucedieron
         JavaRDD<String> errorList = feeds
                 .filter(actualFeed -> actualFeed._2() != null)
-                .flatMap(actualFeed -> Collections.singletonList(actualFeed._2()).iterator());
+                .map(Tuple2::_2);
 
         if (normalPrint) {
             // Muestra los feeds al usuario
