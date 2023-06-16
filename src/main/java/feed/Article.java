@@ -1,5 +1,6 @@
 package feed;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,7 +10,7 @@ import namedEntity.entities.NamedEntity;
 import namedEntity.entities_themes.OtherEntityOtherThemes;
 import namedEntity.heuristic.Heuristic;
 
-public class Article {
+public class Article implements Serializable {
     private String title;
     private String text;
     private Date publicationDate;
