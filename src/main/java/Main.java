@@ -4,7 +4,6 @@ import httpRequest.InvalidUrlTypeToFeedException;
 import namedEntity.heuristic.Heuristic;
 import namedEntity.heuristic.QuickHeuristic;
 import namedEntity.heuristic.RandomHeuristic;
-import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
@@ -19,7 +18,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Main {
@@ -74,31 +72,31 @@ public class Main {
                 .map(feedOptions -> {
                     try {
                         Feed actualFeed = feedOptions._1().parse(feedOptions._2());
-                        return new Tuple2<Feed, String>(actualFeed, null);
+                        return new Tuple2<>(actualFeed, null);
                     } catch (InvalidUrlTypeToFeedException e) {
                         String actualError = "Invalid URL Type to get feed in "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return new Tuple2<Feed, String>(null, actualError);
+                        return new Tuple2<>(null, actualError);
                     } catch (IOException e) {
                         String actualError = "IO exception in subscription "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return new Tuple2<Feed, String>(null, actualError);
+                        return new Tuple2<>(null, actualError);
                     } catch (HttpRequestException e) {
                         String actualError = "Error in connection: " + e.getMessage() + " "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return new Tuple2<Feed, String>(null, actualError);
+                        return new Tuple2<>(null, actualError);
                     } catch (ParserConfigurationException | ParseException e) {
                         String actualError = "Parse error in "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return new Tuple2<Feed, String>(null, actualError);
+                        return new Tuple2<>(null, actualError);
                     } catch (SAXException e) {
                         String actualError = "SAX Exception in "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return new Tuple2<Feed, String>(null, actualError);
+                        return new Tuple2<>(null, actualError);
                     } catch (EmptyFeedException e) {
                         String actualError = "Empty Feed in "
                                 + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
-                        return new Tuple2<Feed, String>(null, actualError);
+                        return new Tuple2<>(null, actualError);
                     }
                 });
 
@@ -112,22 +110,25 @@ public class Main {
                 .filter(actualFeed -> actualFeed._2() != null)
                 .map(Tuple2::_2);
 
+        // HEURÍSTICA
+        // Heurística en uso
+        Heuristic heuristicUsed = new QuickHeuristic();
+
+        JavaRDD<namedEntity.entities.NamedEntity> namedEntities = feedList
+                // Obtengo todos los artículos
+                .flatMap(feed -> feed.getArticleList().iterator())
+                // Obtengo las namedEntity
+                .flatMap(article -> {
+                    article.computeNamedEntities(heuristicUsed);
+                    return article.getNamedEntityList().iterator();
+                });
+
         if (normalPrint) {
+            // Obtener el input de búsqueda sobre los feeds por parte del usuario
+
             // Muestra los feeds al usuario
             feedList.foreach(Feed::prettyPrint);
         } else {
-            // Heurística en uso
-            Heuristic heuristicUsed = new QuickHeuristic();
-
-            JavaRDD<namedEntity.entities.NamedEntity> namedEntities = feedList
-                    // Obtengo todos los artículos
-                    .flatMap(feed -> feed.getArticleList().iterator())
-                    // Obtengo las namedEntity
-                    .flatMap(article -> {
-                        article.computeNamedEntities(heuristicUsed);
-                        return article.getNamedEntityList().iterator();
-                    });
-
             // Muestro las namedEntity en pantalla
             namedEntities.foreach(namedEntity -> {
                 System.out.println(namedEntity.getName());
