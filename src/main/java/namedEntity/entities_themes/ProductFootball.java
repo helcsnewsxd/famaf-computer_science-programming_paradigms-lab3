@@ -1,9 +1,11 @@
 package namedEntity.entities_themes;
 
+import java.io.Serializable;
+
 import namedEntity.entities.entity_classes.Product;
 import namedEntity.themes.themes_classes.sportSubclass.Football;
 
-public class ProductFootball extends Product implements Football {
+public class ProductFootball extends Product implements Football, Serializable {
 
     public ProductFootball(String name, String category, int frequency) {
         super(name, category, frequency);

@@ -1,9 +1,11 @@
 package namedEntity.entities_themes;
 
+import java.io.Serializable;
+
 import namedEntity.entities.entity_classes.Date;
 import namedEntity.themes.themes_classes.cultureSubclass.Cinema;
 
-public class DateCinema extends Date implements Cinema {
+public class DateCinema extends Date implements Cinema, Serializable {
 
     public DateCinema(String name, String category, int frequency) {
         super(name, category, frequency);

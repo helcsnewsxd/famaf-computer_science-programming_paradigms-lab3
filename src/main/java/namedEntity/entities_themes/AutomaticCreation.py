@@ -20,10 +20,12 @@ def genEntityTheme(entity, theme):
 
     print(f"package namedEntity.entities_themes;\n"
           f"\n"
+          f"import java.io.Serializable;\n"
+          f"\n"
           f"import namedEntity{importPath(entity)};\n"
           f"import namedEntity{importPath(theme)};\n"
           f"\n"
-          f"public class {entityName}{themeName} extends {entityName} implements {themeName} {{\n"
+          f"public class {entityName}{themeName} extends {entityName} implements {themeName}, Serializable {{\n"
           f"\n"
           f"    public {entityName}{themeName}(String name, String category, int frequency) {{\n"
           f"        super(name, category, frequency);\n"

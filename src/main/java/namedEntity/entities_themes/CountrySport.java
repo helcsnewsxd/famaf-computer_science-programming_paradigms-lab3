@@ -1,9 +1,11 @@
 package namedEntity.entities_themes;
 
+import java.io.Serializable;
+
 import namedEntity.entities.entity_classes.placeSubclass.Country;
 import namedEntity.themes.themes_classes.Sport;
 
-public class CountrySport extends Country implements Sport {
+public class CountrySport extends Country implements Sport, Serializable {
 
     public CountrySport(String name, String category, int frequency) {
         super(name, category, frequency);
