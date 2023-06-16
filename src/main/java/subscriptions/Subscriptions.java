@@ -113,7 +113,7 @@ public class Subscriptions {
 
             List<SimpleSubscription> simpleSubscriptionList = objStringDataset
                     // Creo la simpleSubscription y la instancio
-                    .flatMap(objString -> {
+                    .map(objString -> {
                         JSONObject obj = new JSONObject(objString);
 
                         SimpleSubscription simpleSubscription = new SimpleSubscription();
@@ -132,7 +132,7 @@ public class Subscriptions {
                         for (int j = 0, szj = arrUrlParams.length(); j < szj; j++)
                             simpleSubscription.addUrlParameter(arrUrlParams.getString(j));
 
-                        return Collections.singletonList(simpleSubscription).iterator();
+                        return simpleSubscription;
                     })
                     // Obtengo la lista de simpleSubscriptions
                     .collect();
