@@ -2,7 +2,9 @@ package namedEntity.entities;
 
 /* Esta clase modela la nocion de entidad nombrada */
 
-public class NamedEntity {
+import java.io.Serializable;
+
+public class NamedEntity implements Serializable {
 	String name;
 	String category;
 	String theme;
