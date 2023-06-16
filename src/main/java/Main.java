@@ -1,6 +1,8 @@
+import feed.Article;
 import feed.Feed;
 import httpRequest.HttpRequestException;
 import httpRequest.InvalidUrlTypeToFeedException;
+import namedEntity.entities.NamedEntity;
 import namedEntity.heuristic.Heuristic;
 import namedEntity.heuristic.QuickHeuristic;
 import namedEntity.heuristic.RandomHeuristic;
@@ -19,6 +21,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.Collections;
+import java.util.Scanner;
 
 public class Main {
     private static final String subscriptionsFilePath = "config/subscriptions.json";
@@ -114,30 +119,76 @@ public class Main {
         // Heurística en uso
         Heuristic heuristicUsed = new QuickHeuristic();
 
-        JavaRDD<namedEntity.entities.NamedEntity> namedEntities = feedList
+        JavaRDD<Article> articleList = feedList
                 // Obtengo todos los artículos
-                .flatMap(feed -> feed.getArticleList().iterator())
-                // Obtengo las namedEntity
-                .flatMap(article -> {
-                    article.computeNamedEntities(heuristicUsed);
-                    return article.getNamedEntityList().iterator();
-                });
+                .flatMap(feed -> feed.getArticleList().iterator());
 
+        // CASOS DE EJECUCIÓN
         if (normalPrint) {
             // Obtener el input de búsqueda sobre los feeds por parte del usuario
+            Scanner scanner = new Scanner(System.in);
+            String rawSearchTerms = scanner.nextLine();
+            Set<String> searchTerms = new java.util.HashSet<>(Collections.emptySet());
 
-            // Muestra los feeds al usuario
-            feedList.foreach(Feed::prettyPrint);
+            var terms = rawSearchTerms.split(" ");
+            Collections.addAll(searchTerms, terms);
+
+            scanner.close();
+            
+            // Ordeno los artículos en base a lo buscado por el usuario
+            List<Article> sortedArticles = articleList
+                    // Obtengo pares (artículo, entidad)
+                    .flatMap(article ->{
+                        // Computo las entidades del artículo
+                        article.computeNamedEntities(heuristicUsed);
+                        
+                        List<NamedEntity> namedEntityFullList = article.getNamedEntityList();
+                        List<Tuple2<Article, NamedEntity>> namedEntityForArticleList = new ArrayList<>();
+                        
+                        for(NamedEntity ne : namedEntityFullList){
+                            namedEntityForArticleList.add(new Tuple2<>(article, ne));
+                        }
+
+                        return namedEntityForArticleList.iterator();
+                    })
+                    // Filtro aquellos pares cuya entidad esté en la búsqueda del usuario
+                    .filter(entityForArticle -> searchTerms.contains(entityForArticle._2().getName()))
+                    // Cambio esa NamedEntity por su frecuencia
+                    .mapToPair(entityForArticle -> new Tuple2<>(entityForArticle._1(), entityForArticle._2().getFrequency()))
+                    // Sumo las frecuencias para cada artículo y obtengo su número para ordenar
+                    .reduceByKey(Integer::sum)
+                    // Swapeo para poder ordenar basándonos en el número de ocurrencias
+                    .mapToPair(Tuple2::swap)
+                    // Ordeno descendentemente
+                    .sortByKey(false)
+                    // Me quedo solo con los artículos a printear
+                    .map(Tuple2::_2)
+                    // Obtengo la lista para printear
+                    .collect();
+                    
+            // Muestra los artículos al usuario
+            for(Article article : sortedArticles){
+                article.prettyPrint();
+            }
         } else {
+            // Obtengo las namedEntity
+            List<NamedEntity> namedEntities = articleList
+                    .flatMap(article -> {
+                        article.computeNamedEntities(heuristicUsed);
+                        return article.getNamedEntityList().iterator();
+                    })
+                    // Obtengo la lista de las entidades
+                    .collect();
+            
             // Muestro las namedEntity en pantalla
-            namedEntities.foreach(namedEntity -> {
+            for(NamedEntity namedEntity : namedEntities){
                 System.out.println(namedEntity.getName());
                 System.out.println(namedEntity.getFrequency());
                 System.out.println(namedEntity.getCategory());
                 System.out.println(namedEntity.getTheme());
                 System.out.println(namedEntity.getClass().toString());
                 System.out.println("-----------");
-            });
+            }
         }
 
         // Imprimo los errores en caso que haya habido
