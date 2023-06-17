@@ -1,357 +1,711 @@
-# Informe Individual - Emanuel Nicolás Herrador
+# Lab 3 Informe
 
-En el presente informe se detallará cómo fue el desarrollo de la implementación del _lector de feeds_ implementado en el Laboratorio 2 utilizando el Framework de Spark para cálculo distribuido.
+Integrantes:
 
-La forma de realizarlo fue **sin** uso de ayuda por inteligencia artificial (sea ChatGPT, WriteSonic, Copilot, entre otros), solo con consultas a _StackOverflow_ y a la _documentación oficial de Spark_.
+Guillermo de Ipola
 
-Para ello, veamos todos los puntos a considerar en el desarrollo planteados por el enunciado del proyecto:
+Emanuel Nicolas Herrador
 
-## Índice de puntos considerados
+Juan Bratti
 
-- [Qué herramientas se utilizaron?](#qué-herramientas-se-utilizaron)
-- [Cómo instalar las herramientas usadas?](#cómo-instalar-las-herramientas-usadas)
-    - [Spark](#spark)
-    - [Maven](#maven)
-    - [IntelliJ IDEA](#intellij-idea)
-- [Cómo debe ser un proyecto de Spark con Java y cómo se corre?](#cómo-debe-ser-un-proyecto-de-spark-con-java-y-cómo-se-corre)
-- [Qué estructura tiene un programa en Spark?](#qué-estructura-tiene-un-programa-en-spark)
-- [Qué estructura tiene un programa de conteo de palabras en diferentes documentos en Spark?](#qué-estructura-tiene-un-programa-de-conteo-de-palabras-en-diferentes-documentos-en-spark)
-- [Cómo adaptar el código del Laboratorio 2 a la estructura del programa objetivo en Spark?](#cómo-adaptar-el-código-del-laboratorio-2-a-la-estructura-del-programa-objetivo-en-spark)
-- [Cómo se integra una estructura ordenada a objetos con la estructura funcional de map-reduce?](#cómo-se-integra-una-estructura-ordenada-a-objetos-con-la-estructura-funcional-de-map-reduce)
+- [Introducción](#introducción)
+    - [Código 1: Guillermo de Ipola](#código-1-guillermo-de-ipola)
+    - [Código 2: Juan Bratti](#código-2-juan-bratti)
+    - [Código 3: Emanuel Nicolas Herrador](#código-3-emanuel-nicolas-herrador)
+- [Desarrollo Segunda Parte](#desarrollo-segunda-parte)
 
-## Qué herramientas se utilizaron?
+# Introducción
 
-En el presente laboratorio se utilizaron como herramientas _fundamentales_ Spark (porque es el objetivo del proyecto), Maven (para tener un buen manejo de las dependencias a utilizar, tanto de Spark como de JSON) e IntelliJ IDEA (en base a recomendación de mi compañero Guille y de los pros que tiene respecto a VSCode, dado que es una herramienta creada para desarrollo puro de Java).
+En esta segunda parte del laboratorio 3, lo que hicimos fue ver el trabajo individual de los miembros del grupo y elegir la mejor alternativa para implementar las funcionalidades de la entrega grupal.
 
-Respecto a la herramienta que se usó para hacer el informe (no para desarrollar el proyecto), esta fue **Obsidian**. Por ello, se agrega la opción de poder leer este informe en formato PDF (al cual exporta Obsidian) en el siguiente [archivo](Informe%20Individual%20-%20Emanuel%20Nicol%C3%A1s%20Herrador.pdf)
+Hubo tres caminos distintos para poder adaptar el código del laboratorio al framework Spark. Esos códigos los detallaremos aquí abajo con sus ventajas y sus desventajas.
 
-## Cómo instalar las herramientas usadas?
+## Código 1: Guillermo De Ipola
 
-### Spark
+En esta primera alternativa se configuró el contexto de Spark con SparkCOnf y JavaSparkContext.
 
-Se ha instalado el framework de Spark siguiendo las instrucciones dadas por:
-
-- [Documentación de descarga de Spark](https://spark.apache.org/docs/latest/#downloading)
-- [Ejemplo de instalación de Spark y su contexto](https://sparkbyexamples.com/spark/spark-installation-on-linux-ubuntu/)
-
-Por ello, los pasos que se siguieron fueron los siguientes:
-
-1. Ir a [https://spark.apache.org/downloads.html](https://spark.apache.org/downloads.html) y descargar la versión `3.4.0 (Apr 13 2023)` con el tipo de paquete `Pre-built for Apache Hadoop 3.3 and later`
-	1. Se descarga en [https://dlcdn.apache.org/spark/spark-3.4.0/spark-3.4.0-bin-hadoop3.tgz](https://dlcdn.apache.org/spark/spark-3.4.0/spark-3.4.0-bin-hadoop3.tgz)
-2. Moverlo de la carpeta `~/Descargas` al directorio en donde se está trabajando (en este caso `~/`)
-3. Extraer el `.tar` y eliminarlo
-4. Cambiar el nombre de la carpeta por `spark`
-5. Setear las variables de entorno para Spark en el archivo `.bashrc`
-
-    ```sh
-    # SPARK
-    export SPARK_HOME='/home/emanuel-nicolas-herrador/spark'
-    export PATH=$PATH:$SPARK_HOME/bin
-    ```
-
-6. Recargar el archivo de configuración
-
-    ```sh
-	$ source ~/.bashrc
-    ```
-
-Para verificar la instalación y que todo ande de forma correcta, se hicieron pruebas de ejecución de `.jar` como de la shell de spark:
-
-```sh
-$ spark-submit --class org.apache.spark.examples.SparkPi spark/examples/jars/spark-examples_2.12-3.4.0.jar 10
-
-$ run-example SparkPi 10
-
-$ spark-shell --master local[2]
-# `--master` especifica la master URL para un cluster distribuido. Sin embargo, si la flag es `local[N]`, se usa para correr de forma local N hilos (threads).
-# Más información se puede ver en https://spark.apache.org/docs/latest/submitting-applications.html#master-urls
+```cpp
+SparkConf conf = new SparkConf().setAppName("FeedReader").setMaster("local[*]");
+JavaSparkContext sc = new JavaSparkContext(conf);
 ```
 
-### Maven
+La adaptación de Spark se concentro en el archivo Main.java y fue la siguiente:
 
-En este punto, en mi computadora de forma local estuve probando utilizar maven instalándolo con
+Se optó por paralelizar de forma distribuida principalmente la lista de suscripciones en una variable `rSubList` para luego con un `flatMap` aplicado sobre la misma, obtener una lista de pares conteniendo por un lado los **feeds** de cada suscriptción y, por otro lado, cualquier error que pueda haber surgido en el procesamiento de los feeds. Devolvemos un iterador sobre estas tuplas. Luego, filtramos de los pares obtenidos, aquellos feeds que pudieron ser procesados correctamente.
 
-```sh
-$ sudo apt-get install maven
-```
+```cpp
 
-pero no funcionaba y se generaban muchísimos errores al querer usar maven para crear un proyecto nuevo y/o compilar un programa de java para crear el archivo `.jar` correspondiente.
+var feeds = rSubList.flatMap((simpleSubscription -> {
+            List<Function0<Tuple2<Feed, String>>> frs = new ArrayList<>();
 
-Por ello mismo, estuve investigando y los pasos que seguí fueron de la [documentación oficial de Maven](https://maven.apache.org/install.html):
-
-1. Descargar `apache-maven-3.9.2-bin.tar.gz` desde la [página de descargas](https://maven.apache.org/download.cgi)
-2. Extraerlo al archivo y mover la carpeta resultante al directorio `~`
-3. Cambio el nombre de la carpeta a, simplemente, `maven`
-4. Se agrega la variable de entorno al archivo `.bashrc` del siguiente modo:
-
-    ```sh
-    # APACHE MAVEN
-    export MAVEN_HOME='/home/emanuel-nicolas-herrador/maven'
-    export PATH=$PATH:$MAVEN_HOME/bin
-    ```
-
-5. Recargar el archivo de configuración
-
-    ```sh
-    $ source ~/.bashrc
-    ```
-
-Se comprueba la instalación mediante:
-
-```sh
-$ mvn -v
-Apache Maven 3.9.2 (c9616018c7a021c1c39be70fb2843d6f5f9b8a1c)
-Maven home: /home/emanuel-nicolas-herrador/maven
-Java version: 17.0.7, vendor: Private Build, runtime: /usr/lib/jvm/java-17-openjdk-amd64
-Default locale: es_AR, platform encoding: UTF-8
-OS name: "linux", version: "5.15.0-72-generic", arch: "amd64", family: "unix"
-```
-
-
-### IntelliJ IDEA
-
-La instalación de este IDE fue **extremadamente sencilla**. Simplemente se tuvo que instalar desde *snap* con el comando:
-```sh
-sudo snap install intellij-idea-community --classic
-```
-
-## Cómo debe ser un proyecto de Spark con Java y cómo se corre?
-
-Para presentar la estructura que debe tener un programa y un proyecto realizado en Spark, se va a utilizar el [ejemplo de java presente en la documentación](https://spark.apache.org/docs/latest/quick-start.html#self-contained-applications).
-
-Para ello, notemos que un programa en Spark se ejecuta desde un `.jar` con el comando `spark-submit --class "nombreClase" --master local[N] target/"nombreDelJar"`, por lo que se debe usar compilar la aplicación JAR con, por ejemplo, _Maven_.
-
-Por ello, entonces, hay solo dos cuestiones _fundamentales_ a tener en cuenta para el proyecto:
-
-- Uso de Maven para manejo de dependencias, compilación y ejecución (es recomendado por la documentación de Spark y dado que estamos usando un IDE que tiene lo tiene integrado)
-	- Requiere el uso de un archivo `pom.xml` en donde se listen las configuraciones de compilación y dependencias a utilizar. En este caso, como es un proyecto de Spark, se considera:
-		```xml
-		<?xml version="1.0" encoding="UTF-8"?>
-		<project xmlns="http://maven.apache.org/POM/4.0.0"
-		         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-		    <modelVersion>4.0.0</modelVersion>
-		
-		    <groupId>org.example</groupId>
-		    <artifactId>sparkTest</artifactId>
-		    <version>1.0-SNAPSHOT</version>
-		
-		    <properties>
-		        <maven.compiler.source>17</maven.compiler.source>
-		        <maven.compiler.target>17</maven.compiler.target>
-		        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		    </properties>
-		
-		    <dependencies>
-		        <!-- SPARK dependency -->
-		        <dependency>
-		            <groupId>org.apache.spark</groupId>
-		            <artifactId>spark-sql_2.12</artifactId>
-		            <version>3.4.0</version>
-		        </dependency>
-		    </dependencies>
-		
-		</project>
-		```
-- Estructura usual de proyectos Java
-	```sh
-	./pom.xml
-	./src
-	./src/main
-	./src/main/java
-	./src/main/java/SimpleApp.java
-	```
-
-**A diferencia del ejemplo de la documentación**, el programa `SimpleApp.java` del que se hace uso contiene una leve modificación dado que, dada la integración con las librerías SQL de Spark, se consideraba error la ambigüedad del tipo de la función `filter(s -> s.contains("a"))`. Por ello, se procedió a cambiarla por `filter((String s) -> s.contains("a"))`, quedando:
-
-```java
-/* SimpleApp.java */
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.Dataset;
-
-public class SimpleApp {
-    public static void main(String[] args) {
-        String logFile = "/home/emanuel-nicolas-herrador/spark/README.md";
-        SparkSession spark = SparkSession.builder().appName("Simple Application").getOrCreate();
-        Dataset<String> logData = spark.read().textFile(logFile).cache();
-
-        long numAs = logData.filter((String s) -> s.contains("a")).count();
-        long numBs = logData.filter((String s) -> s.contains("b")).count();
-
-        System.out.println("Lines with a: " + numAs + ", lines with b: " + numBs);
-
-        spark.stop();
-    }
-}
-```
-
-Finalmente, entonces, para poder compilar y correr este proyecto, se debe hacer lo siguiente:
-
-- Empaquetar la aplicación usando Maven
-	```sh
-	$ mvn package
-	```
-
-- Correr la aplicación con `spark-submit`
-	```sh
-	$ spark-submit --class "SimpleApp" --master local[4] target/sparkTest-1.0-SNAPSHOT.jar
-	```
-
-Respecto a mi caso en particular, al estar usando Intellij IDEA, se siguieron las recomendaciones dadas por la [documentación de developer-tools](https://spark.apache.org/developer-tools.html).
-
-## Qué estructura tiene un programa en Spark?
-
-Dado que la idea del framework Spark es cálculo distribuido, la estructura del sistema distribuido es:
-
-![Estructura Spark](img/Estructura%20Spark.png)
-
-La idea de los programas es crear aplicaciones o tareas para que puedan ser ejecutadas por varios nodos en paralelo de forma "independiente" entre sí. La idea es poder paralelizar el proceso de ejecución del programa principal dividiendo _tareas_ entre distintos nodos de procesamiento y luego mergeando toda la información obtenida.
-
-Por ello mismo, en este caso que se usa Java, lo que se requiere como estructura del programa (y que se puede ver en el ejemplo de la sección anterior) es lo siguiente:
-
-1. **Creación de una sesión de Spark**: dentro del programa en particular, se debe usar la clase `SparkSession`, la cual es la interfaz principal para interactuar con Spark y proporciona acceso a las funcionalidades principales (Como DataFrame y SQL). En particular, en el ejemplo anterior, lo que se hace es crear desde la sesión una aplicación que ejecute haga el procesamiento del archivo `README.md`. Aquí, se debe configurar la sesión con las propiedades y opciones adecuadas (cantidad de nodos, de recursos asignados a cada no, etc...)
-2. **Lectura de datos**: se especifica la fuente de datos que se va a usar en el programa (en este caso, el README). Pueden ser muchos tipos de datos, sean archivos locales, bases de datos, etc, etc...
-3. **Transformaciones y operaciones**: una vez que los datos se cargaron en un DataFrame o un RDD, podemos aplicar distintas transformaciones y operaciones para manipular y procesar los datos, sea de filtrado, mapeo, ordenamiento, etc ([documentación de transformaciones de RDD (resilient distributed dataset)](https://spark.apache.org/docs/latest/rdd-programming-guide.html#transformations)). En Spark estas transformaciones, tal y como en muchos lenguajes declarativos, son operaciones lazy que se van almacenando como un plan de ejecución (en algún momento se ejecutarán pero no de inmediato)
-4. **Acciones con los datos**: después de las transformaciones, se pueden aplicar acciones para activar la ejecución del plan definido. Las acciones son operaciones que desencadenan la computación de los datos y generan resultados o realizan acciones secundarias como puede ser imprimir en la consola o guardar los resultados en un archivo en otro directorio ([documentación de acciones de RDD](https://spark.apache.org/docs/latest/rdd-programming-guide.html#actions)).
-5. **Cierre de la sesión de Spark**: una vez que se han hecho todas las operaciones necesarias, se cierra la sesión para liberar los recursos utilizados y finalizar el programa.
-
-Este es un esquema general de cómo es la estructura de los programas de Spark, más que nada, relacionados a la tarea que debemos realizar en este proyecto.
-
-## Qué estructura tiene un programa de conteo de palabras en diferentes documentos en Spark?
-
-Un programa de conteo de palabras de **diferentes** documentos es, básicamente, una generalización de [este ejemplo brindado por Spark](https://github.com/apache/spark/blob/master/examples/src/main/java/org/apache/spark/examples/JavaWordCount.java).
-Por ello mismo, entonces, el programa sería el siguiente:
-
-```java
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.jetbrains.annotations.NotNull;
-import scala.Tuple2;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-public final class SimpleApp {
-    public static void main(String @NotNull [] args) {
-        if(args.length == 0) {
-            System.out.println("Usage: JavaWordCount <file1> <file2> ...");
-            System.exit(1);
-        }
-
-        // Configuración de Spark
-        SparkConf sparkConf = new SparkConf()
-                .setAppName("JavaWordCount")
-                .setMaster("local[*]");
-
-        JavaSparkContext spark = new JavaSparkContext(sparkConf);
-
-        // Paralelizar los paths a los archivos como una lista de strings
-        JavaRDD<String> fileRDD = spark.parallelize(Arrays.asList(args));
-
-        // Leer archivos, separar el contenido en palabras y contar las ocurrencias
-        JavaPairRDD<String, Integer> output = fileRDD
-                .flatMap(file -> {
-                    // Leer el contenido de cada archivo y separarlo en líneas
+            for (int j = 0, szj = simpleSubscription.getUrlParametersSize(); j < szj; j++) {
+                final int i = j;
+                frs.add(() -> {
                     try {
-                        BufferedReader reader = new BufferedReader(new FileReader(file));
-
-                        List<String> linesRead = new ArrayList<>();
-                        String nwLine;
-                        while((nwLine = reader.readLine()) != null) linesRead.add(nwLine);
-                        reader.close();
-
-                        return linesRead.iterator();
+                        return new Tuple2(simpleSubscription.parse(i), null);
+                    } catch (InvalidUrlTypeToFeedException e) {
+                        return new Tuple2(null,
+                                "Invalid URL Type to get feed in "
+                                        + simpleSubscription.getFormattedUrlForParameter(i));
+                    } catch (HttpRequestException e) {
+                        return new Tuple2(null,
+                                "Error in connection: " + e.getMessage() + " "
+                                        + simpleSubscription.getFormattedUrlForParameter(i));
+                    } catch (EmptyFeedException e) {
+                        return new Tuple2(null,
+                                "Empty Feed in "
+                                        + simpleSubscription.getFormattedUrlForParameter(i));
+                    } catch (MalformedURLException e) {
+                        return new Tuple2(null,
+                                "Malformed URL exception en subscripcion "
+                                        + simpleSubscription.getFormattedUrlForParameter(i));
                     } catch (IOException e) {
-                        e.printStackTrace();
-                        return Collections.emptyIterator();
+                        return new Tuple2(null,
+                                "IO exception en subscripcion " + simpleSubscription.getFormattedUrlForParameter(i));
+                    } catch (ParserConfigurationException e) {
+                        return new Tuple2(null,
+                                "Parse error in "
+                                        + simpleSubscription.getFormattedUrlForParameter(i));
+                    } catch (ParseException e) {
+                        return new Tuple2(null,
+                                "Parse error in "
+                                        + simpleSubscription.getFormattedUrlForParameter(i));
+                    } catch (SAXException e) {
+                        return new Tuple2(null,
+                                "SAX Exception in "
+                                        + simpleSubscription.getFormattedUrlForParameter(i));
                     }
-                })
-                // Separar las líneas en palabras
-                .flatMap(line -> Arrays.asList(line.split(" ")).iterator())
-                // Contar las ocurrencias de las palabras
-                .mapToPair(word -> new Tuple2<>(word, 1))
-                .reduceByKey(Integer::sum);
+                });
+            }
 
-        // Mostrar por pantalla los resultados obtenidos
-        output.foreach(wordCount -> System.out.println(wordCount._1() + ": " + wordCount._2()));
+            return frs.iterator();
+        })).mapToPair(Function0::apply);
 
-        spark.close();
+        var parsedFeeds = feeds.filter((feedErrorTuple) -> {
+            return feedErrorTuple._2() == null && feedErrorTuple._1() != null;
+        }).map(Tuple2::_1);
+```
+
+Luego de la obtención de los feeds, se decide si lo que se quiere obtener es un print normal de las noticias, u obtener sus named entities. 
+
+1. En el primer caso, simplemente se utiliza el método `foreach` sobre los feeds obtenidos para hacer un `prettyPrint` de los mismos.
+2. En el segundo caso, se vuelve a utilizar el método `flatMap` para obtener un RDD que contenga los artículos de cada feed. Si la lista de artículos no es nula, se devuelve un iterador sobre los mismos. Si es nula, se devuelve Collections.emptyIterator() para descartar esos feeds devolviendo un iterador vacío.
+    
+    Luego aplicamos otro `flatMap` para obtener las entidades nombradas de cada artículos. Aquí se utiliza `computeNamedEntities`. Si el procesamiento de las entidades no es exitosa, también se devuelve `Collections.emptyIterator()` para descartar esos artículos.
+    
+    A estas entidades obtenidas, se les aplica un `filter` para descartar las que sean iguales a null.
+    
+    Luego, con `mapToPair` y `reduceByKey`, creamos pares clave-valor para cada entidad y su frecuencia, y reducirlas al sumarlas.
+    
+    Finalmente, con `map` y `foreach` se obtienen la información de cada entidad y se imprime por pantalla.
+    
+
+```cpp
+if(normalPrint) {
+            // Filter out feeds and print them
+            // Print feed to user
+            parsedFeeds.foreach(Feed::prettyPrint);
+        } else {
+            parsedFeeds.flatMap(feed -> {
+                if(feed.getArticleList() != null) {
+                    return feed.getArticleList().iterator();
+                } else {
+                    return Collections.emptyIterator();
+                }
+            }).flatMap(article -> {
+                Heuristic heur = new QuickHeuristic();
+                article.computeNamedEntities(heur);
+                if(article.getNamedEntityList() != null) {
+                    return article.getNamedEntityList().iterator();
+                } else {
+                    return Collections.emptyIterator();
+                }
+            }).filter(Objects::nonNull).mapToPair(namedEntity -> new Tuple2<>(namedEntity.getName(), namedEntity)).reduceByKey((n1, n2) -> {
+                var n = new NamedEntity(n1.getName(), n1.getCategory(), n1.getFrequency() + n1.getFrequency());
+                n.setTheme(n1.getTheme());
+                return n;
+            }).map(Tuple2::_2).foreach(namedEntity -> {
+                System.out.println(namedEntity.getName());
+                System.out.println(namedEntity.getFrequency());
+                System.out.println(namedEntity.getCategory());
+                System.out.println(namedEntity.getTheme());
+                System.out.println(namedEntity.getClass().toString());
+                System.out.println("-----------");
+            });
+        }
+```
+
+A los errores obtenidos en los procesamientos de los feeds y los artículos, se los imprime al final del programa:
+
+```cpp
+// Filter out Errors and print them
+        var subscriptionErrors = feeds.filter((feedErrorTuple) -> {
+            return feedErrorTuple._2() != null;
+        }).map(Tuple2::_2);
+        if(!subscriptionErrors.isEmpty()) {
+            System.out.println("==================================================");
+            System.out.println(
+                    "There was a total of " + subscriptionErrors.count() + " errors in the creation of the Feeds:");
+            subscriptionErrors.foreach((s) -> {
+                System.out.print("  - ");
+                System.out.println(s);
+            });
+        }
+```
+
+### Ventajas
+
+Se paraleliza el procesamiento de los feeds, los artículos y se aprovecha reduce para poder computar la frecuencia de las entidades nombradas eficientemente. Buen aprovechamiento de las capacidades de Spark en relación a la computación distribuida.
+
+### Desventajas
+
+SI bien se utilizan las capacidades de Spark en la búsqueda de entidades nombradas desde Main.java, podría haberse expandido su uso a otros objetos y clases como por ejemplo, para la función `computeNamedEntities` que hace el cómputo en sí de las entidades nombradas en la clase *Article*, o para el procesamiento de las suscripciones en las clases del archivo Subscriptions.java.
+
+Si bien tal vez esta adición hubiera ralentizado el funcionamiento en general del programa en nuestro contexto, en un cluster de tamaño considerable podría haber significado una ventaja sobre la complejidad.
+
+## Código 2: Juan Bratti
+
+En esta alternativa se decidió usar SparkConf y JavaSparkContext para configurar el contexto de Spark.
+
+Además, se hizo uso de una clase extra llamada SparkContextHolder que lo que permite es poder trasladar nuestro contexto de spark utilizado en el archivo Main.java a otros objetos y clases. Esta clase lo que hace es tener métodos para poder guardar el respectivo contexto, además de métodos para poder cerrarlo y obtenerlo.
+
+Inicialización de Spark:
+
+```cpp
+SparkConf conf = new SparkConf().setAppName("NamedEntity Recognizer").setMaster("local[*]");
+SparkContextHolder sparkHolder = new SparkContextHolder();
+JavaSparkContext sparkContext = new JavaSparkContext(conf);
+sparkHolder.setSparkContext(sparkContext);
+```
+
+Clase de Holder extra:
+
+```java
+public class SparkContextHolder implements Serializable{
+    private static transient JavaSparkContext sparkContext;
+
+    public JavaSparkContext getSparkContext() {
+        return sparkContext;
+    }
+
+    public void setSparkContext(JavaSparkContext context) {
+        sparkContext = context;
+    }
+
+    public void closeSparkContext() {
+        if (sparkContext != null) {
+            sparkContext.close();
+        }
     }
 }
 ```
 
-En este caso, a diferencia del ejemplo provisto por Spark para un solo archivo, se decidió usar el `BufferedReader` para paralelizar la lectura de los diferentes archivos.
+A partir de esto, lo que se hizo fue utilizar Spark en el parseo de suscripciones del archivo JSON que se encuentra en el *filepath* dado, en el procesamiento de los feeds y artículos, y en el cómputo de las entidades nombradas.
 
-## Cómo adaptar el código del Laboratorio 2 a la estructura del programa objetivo en Spark?
+Para el parseo de las suscripciones, se creó un objeto de Subscriptions y se llamo a parse, pasando como argumento el filepath y además el objeto que contiene nuestro contexto de Spark.
 
-En la adaptación del código del Laboratorio 2, se consideró (obviamente) que el driver se crea y reside en el `Main.java` mientras va enviando tareas a los worker nodes. Si bien en el código está bien explicada cada parte con comentarios, aquí va a mencionarse nuevamente. 
+```java
+Subscriptions subscriptions = new Subscriptions();
+       try {
+            subscriptions.parse(subscriptionsFilePath, sparkHolder);
+       } catch (IOException e) {
+                subscriptionErrors.add("Error parsing subscriptions file: " + e.getMessage());
+       }
+```
 
-El esquema que se consideró fue (**haciendo el PUNTO EXTRA de integrar en estructura map-reduce la obtención de feeds**):
+En el método parse de Subscriptions, se obtuvo el contexto del holder, y se creó un RDD para paralelizar el procesamiento del contenido de nuestro archivo JSON en el *filepath*. Para ello, en nuestro RDD jsonData se carga el contenido del archivo usando métodos de Spark y se aplica `flatMap` al RDD para extraer, usando la librería Gson, el contenido del archivo JSON en una lista de objetos de tipo Subscription (clase intermedia que se usa como auxiliar, tal vez innecesaria).
 
-- Validar los argumentos (en caso que no sean válidos, imprimo una ayuda y termino)
-- Hacer las configuraciones para usar Spark (SparkConf y JavaSparkContext)
-- Creo una Subscription que parsea el archivo JSON dividiendo cada JSONObject para las SimpleSubscription (todavía no se parsearon)
-- Paralelizo las listas de subscripciones para hacer las siguientes acciones de forma concurrente cada una
-	- Separar las subscripciones por sus parámetros
-	- Para cada combinación de subscripción - parámetro, se parsea el JSONObject, se hace la HTTP Request y se obtiene el Feed
-		- Se manejan los casos de error devolviendo tuplas en el `flatMap`. Se considera `(feed, error)` donde uno es, sí o sí, `null`. Esto es para dividir los casos
-- Se filtra de la lista de tuplas por un lado los feeds y por otro los errores
-- Ahora hay dos casos dependiendo del parámetro que se haya pasado para ejecutar el programa
-	- Si tengo que imprimir normal, para cada feed hago `prettyPrint`
-	- Si tengo que hacer las heurísticas, lo que se realiza es:
-		- Crear el objeto de la heurística
-		- Se obtiene la lista de artículos para cada feed
-		- Se computan las namedEntities para cada feed y se obtiene la lista de estas para todos los artículos de todos los feeds
-		- Se muestran por pantalla las entidades nombradas
-- Se imprimen los errores en caso que haya habido
+Luego de esta transformación, se vuelve aplicar `flatMap` para poder pasar los datos de esta clase auxiliar, a nuestra clase `SimpleSubscription`, que es la que usamos a lo largo de toda la implementación. Finalmente se llama a `collect()` para recolectar todos las transformaciones realizadas en cada `SimpleSubscription`, y guardar las mismas en la lista `subscriptionsList` definida en Subscription.Java para ser accedidas más tarde en nuestro programa.
 
-Esto se realizó de forma sencilla teniendo en cuenta que:
+```
+JavaSparkContext sparkContext = sparkHolder.getSparkContext();
 
-- Para realizar concurrencia, los elementos que se usen deben implementar la clase `Serializable`, lo cual implica que se puede convertir en una secuencia de bytes que pueden ser leídos posteriormente para restaurar el objeto original.
-	- Esto se usa para guardar el estado del objeto y poder transmitirlo fácilmente (cuando se comparte a los nodos como es el caso de las clases de las heurísticas, simpleSubcriptions, Feed, por ejemplo)
-- La concurrencia se hace en la parte de las transformaciones de los objetos RDD (o iterables) que se utilizan en el programa
-	- Esto implica que se hace fuerte uso de `flatMap` y de `filter` (este solo para separar entre feed y errores)
-	- Hay que tener en cuenta que como esto se aplica en cada nodo de forma aparte y Spark funciona para que, si uno tuvo un error o se cayó, otro pueda hacer la tarea; entonces jamás se puede tener una excepción sin catchear dentro de la función
-		- Por ello, siempre devuelven algo. En el caso particular en el que se usan, es para crear la lista de errores a mostrar al final del programa
-		- Esto permite que las transformaciones se hagan de forma lazy hasta tanto se invoque a una acción
-- Dada la naturaleza del feedReader, las únicas acciones que se hacen con los objetos de Spark son: mostrar por pantalla (con un `foreach`) y contar la cantidad (para saber si imprimo o no errores, con un `count`).
+        JavaRDD<String> jsonData = sparkContext.wholeTextFiles(subscriptionsFilePath).values();
 
+        JavaRDD<Subscription> subscriptionsRDD = jsonData.flatMap(json -> {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<Subscription>>() {}.getType();
+            List<Subscription> subscriptions = gson.fromJson(json, type);
+            return subscriptions.iterator();
+        });
 
-### Implementación final
+        // Extract the required fields
+        JavaRDD<SimpleSubscription> simpleSubscriptionsRDD = subscriptionsRDD.map(subscription -> {
+            String url = subscription.getUrl();
+            String urlType = subscription.getUrlType();
+            List<String> urlParams = subscription.getUrlParams();
 
-Para poder seguir paralelizando más en otros objetos y clases, requerimos tener alguna forma de "pasarles" a estos el "manejador" de Spark. Por ello mismo, para poder realizar esto, usé la herramienta **SparkSession** que habilita esta opción y está disponible en versiones más nuevas de Spark.
+            SimpleSubscription simpleSubscription = new SimpleSubscription();
+            simpleSubscription.setUrl(url);
+            simpleSubscription.setUrlType(urlType);
 
-Por ello mismo, teniendo en cuenta esto y pasando la sesión a los diferentes objetos, se ha realizado también lo siguiente (se suma a lo hecho en la 1era aproximación):
+            if (urlType.equals("rss")) {
+                simpleSubscription.setParser(new RssParser());
+            } else if (urlType.equals("reddit")) {
+                simpleSubscription.setParser(new RedditParser());
+            }
 
-- **Subscriptions.java**: se agrega la paralelización del parseo de los JSONObjects, creación de las SimpleSubscriptions y su instanciación
-- **Compute Named Entities**: se probó agregar la paralelización para el conteo de las entidades nombradas pero dado que tardaba entre 2 o 3 veces más que la implementación anterior, decidí no considerar esta opción
+            for (String param : urlParams) {
+                simpleSubscription.addUrlParameter(param);
+            }
 
-## Cómo se integra una estructura ordenada a objetos con la estructura funcional de map-reduce?
+            return simpleSubscription;
+        });
 
-Para realizar la combinación de estos _dos mundos_, tenemos que estructurar la idea de cómo se va a plantear el código para maximizar lo que nos brinda cada parte:
+        List<SimpleSubscription> simpleSubscriptions = simpleSubscriptionsRDD.collect();
+        for (SimpleSubscription simpleSubscription : simpleSubscriptions) {
+            this.addSimpleSubscription(simpleSubscription);
+        }
+```
 
-- Procesamiento en paralelo (map-reduce) dividiendo datos en fragmentos más pequeños
-- Encapsulamiento y secuenciación para preservar relación y orden entre objetos durante el procesamiento
+Luego de parsear las suscripciones, se prosigue con el parseo de los feeds de cada suscripción.
 
-Por ello mismo, entonces, queremos combinar estos dos conceptos: el de programación funcional de Map-Reduce con el diseño orientado a objetos, para mantener la estructura ordenada mientras se aprovecha el procesamiento en paralelo y la escalabilidad de Map-Reduce.
+Para esto, se crea un RDD que contiene la lista de suscripciones y se aplica `flatMap` para que en cada suscripción de la lista, se extraiga su feed con el método parse del objeto `SimpleSubscription`. Se hacen un par de control de errores en el caso de que el parseo del feed no haya sido exitoso.
 
-Como consecuencia, lo que se tiene que tener en cuenta es:
+```java
+JavaRDD<SimpleSubscription> subscriptionsRDD = sparkContext.parallelize(subscriptions.getSubscriptionList());
 
-- ¿Cómo debe ser el orden y qué se va a usar para ello?
-	- Determina qué atributo o conjunto de estos se va a usar para establecer el orden de los objetos
-- Fase de mapeo
-	- Cada objeto se asigna a una clave de ordenación utilizando la función de map. La clave de ordenación y el objeto se emiten como pares clave-valor
-	- En este caso, la clave sería el valor del atributo de ordenación y el valor sería el objeto en sí
-- Fase de ordenación
-	- Los pares clave-valor generados en la fase de mapeo se ordenan según la clave de ordenación (garantiza que los objetos se agrupen de acuerdo con su orden definido)
-- Fase de reducción
-	- Los objetos se procesan en función de su orden
+            JavaRDD<Feed> feedsRDD = subscriptionsRDD.flatMap(subscription -> {
+                List<Feed> feeds = new ArrayList<>();
+                for (int j = 0, szj = subscription.getUrlParametersSize(); j < szj; j++) {
+                    try {
+                    Feed feed = subscription.parse(j);
+                    feeds.add(feed);
+                    } catch (InvalidUrlTypeToFeedException e) {
+                        subscriptionErrors.add(
+                                "Invalid URL Type to get feed in " + subscription.getFormattedUrlForParameter(j));
+                    } catch (HttpRequestException e) {
+                        subscriptionErrors.add(
+                                "Error in connection: " + e.getMessage() + " " + subscription.getFormattedUrlForParameter(j));
+                    } catch (EmptyFeedException e) {
+                        subscriptionErrors.add(
+                                "Empty Feed in " + subscription.getFormattedUrlForParameter(j));
+                    } catch (MalformedURLException e) {
+                        subscriptionErrors.add(
+                                "Malformed URL exception en subscription " + subscription.getFormattedUrlForParameter(j));
+                    } catch (IOException e) {
+                        subscriptionErrors.add(
+                                "IO exception en subscription " + subscription.getFormattedUrlForParameter(j));
+                    } catch (ParserConfigurationException e) {
+                        subscriptionErrors.add(
+                                "Parse error in " + subscription.getFormattedUrlForParameter(j));
+                    } catch (SAXException e) {
+                        subscriptionErrors.add(
+                                "SAX Exception in " + subscription.getFormattedUrlForParameter(j));
+                    }
+                }
+                return feeds.iterator();
+            });
+```
 
-En esta primera parte se pueden observar todos estos conceptos más que nada en la sección del _wordCounter_ de diferentes archivos. Respecto a dónde se vería reflejado fielmente en el proyecto actual, sería en la parte grupal cuando se ordenen los artículos en base al criterio que se establece desde un principio (las palabras que se seleccionaron para buscar).
+Luego del `flatMap`, que devuelve un iterador sobre los feeds extraídos, se decide qué hacer de acuerdo a las necesidades del usuario:
 
-- En los dos casos, la función de ordenación es la suma de las ocurrencias. En uno de las palabras y en el otro de las entidades seleccionadas
+1. Si se quiere printear sólo los feeds, se utiliza `foreach` y `prettyPrint` sobre cada uno de ellos para imprimirlos.
+    
+    ```cpp
+    feedsRDD.foreach(feed -> feed.prettyPrint());
+    ```
+    
+2. Si se desean buscar y printear las entidades nombradas:
+    
+    Usamos un RDD para los artículos, en donde aplicamos la `flatMap` al RDD que contiene los feeds para extraer todos los artículos. Luego, usando un RDD para la lista de las entidades nombradas, se aplica a cada articulo en el RDD anteriormente mencionado, la función `processNamedEntities` con `flatMap` , pasandole el artículo siendo procesado en ese momento + la heurística + el holder del contexto de Spark.
+    
+    ```java
+    JavaRDD<Article> articlesRDD = feedsRDD.flatMap(feed -> feed.getArticleList().iterator());
+    JavaRDD<List<NamedEntity>> namedEntitiesRDD = articlesRDD.map(article -> processNamedEntities(article, heur, sparkHolder));
+    ```
+    
+    La función `processNamedEntities` llama a computeNamedEntities pasando así el holder con nuestro contexto de Spark. Retorna la lista de entidades nombradas del artículo pasado.
+    
+    ```java
+    public static List<NamedEntity> processNamedEntities(Article article, Heuristic heur, SparkContextHolder sparkHolder) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+            // Procesar las entidades nombradas en el artículo utilizando la heurística proporcionada
+            article.computeNamedEntities(heur, sparkHolder);
+            // Devolver la lista de entidades nombradas encontradas en el artículo
+            return article.getNamedEntityList();
+        }
+    ```
+    
+    Finalmente, se le pasa el sparkHolder a `computeNamedEntities` para poder usar los métodos mapToPair y reduceByKey en la búsqueda de las entidades. Para ello se tiene un RDD con las palabras del artículo en cuestión, y usando filter, mapToPair y reduceByKey se ponen todas las palabras en una tupla nombre-frecuencia de forma tal que se reduzcan las instancias de las palabras iguales, sumando entre sí sus frecuencias, teniendo una contabilización de todas las entidades distintas en nuestro artículo. Luego se aplica el proceso para ver si la palabra es una entidad o no, categorizandola según la heurística.
+    
+    ```java
+    JavaRDD<String> wordsRDD = sparkContext.parallelize(Arrays.asList(text.split(" ")));
+            
+    JavaPairRDD<String, Integer> entityWordsRDD = wordsRDD
+                .filter(s -> h.isEntity(s))
+                .mapToPair(s -> new Tuple2<>(s, 1))
+                .reduceByKey((freq1, freq2) -> freq1 + freq2);
+    
+                JavaRDD<NamedEntity> namedEntitiesRDD = entityWordsRDD.map(tuple -> {
+                String name = tuple._1();
+                NamedEntity ne = this.getNamedEntity(name);
+    
+                if (ne == null){
+                    Class<? extends NamedEntity> categoryClass = h.getCategory(name);
+                    if(categoryClass == null) {
+                        categoryClass = OtherEntityOtherThemes.class;
+                    }
+                    ne = categoryClass.getDeclaredConstructor().newInstance();
+                    ne.setFrequency(tuple._2());
+                    ne.setName(name);
+                }
+                return ne;
+            });
+    ```
+    
+    Finalmente se llama a `collect()` para poder devolver la lista de entidades del artículo.
+    
+    ```
+    List<NamedEntity> namedEntities = namedEntitiesRDD.collect();
+    this.namedEntityList.addAll(namedEntities);
+    ```
+    
+    y en Main.java se imprime esta lista con usando `foreach` en cada elemento del RDD que contiene la lista de entidades nombradas
+    
+    ```
+    namedEntitiesRDD.foreach(namedEntitiesList -> {
+                        for (NamedEntity namedEntity : namedEntitiesList) {
+                            System.out.println(namedEntity.getName());
+                            System.out.println(namedEntity.getFrequency());
+                            System.out.println(namedEntity.getCategory());
+                            System.out.println(namedEntity.getTheme());
+                            System.out.println(namedEntity.getClass().toString());
+                            System.out.println("-----------");
+                        }
+                    });
+    ```
+    
+
+### Ventajas
+
+Se pudo aplicar el contexto de Spark a varios de los objetos y clases relacionados con el procesamiento de algún tipo de dato: de suscripciones, de feeds y artículos, de entidades nombradas.
+
+### Desventajas
+
+El código podría haberse escrito de forma más corta, clara y eficiente, además de que creemos que es la implementación que más tarda en procesar lo pedido debido a que se usa Spark en muchos objetos y clases (por ejemplo, “estaría de más” usarlo en `computeNamedEntities`).
+
+## Código 3: Emanuel Nicolas Herrador
+
+En esta implementación se decidió usar SparkSession para configurar el contexto de Spark. Ésta decisión fue para poder facilitar el uso del mismo contexto de Spark en otros objetos y clases que no sean aquellos incluidos en el archivo de Main.java.
+
+```cpp
+// Configuración de la sesión de Spark
+SparkSession sparkSession = SparkSession
+          .builder()
+          .appName("feedReader")
+          .master("local[100]")
+          .getOrCreate();
+JavaSparkContext spark = new JavaSparkContext(sparkSession.sparkContext());
+```
+
+El approach que hubo en este código fue intentar expandir las funcionalidades de Spark a otros archivos, no sólo a Main.java. Para ello, también se adaptó el código de el parseo de las suscripciones en el archivo Subscriptions.java.
+
+Lo primero que se hizo fue crear un objeto Subscriptions para hacer el posterior parseo del archivo que contiene las urls, paralelizando el poder de cómputo.
+
+```cpp
+Subscriptions subscriptions = new Subscriptions(sparkSession);
+subscriptions.parse(subscriptionsFilePath);
+```
+
+Veamos que se le pasa la sesión de Spark a la llamada de Subscriptions. Ésto es porque se incluyó un campo del objeto para contener a nuestro contexto de Spark y poder utilizarla en el método *****parse*****.
+
+```java
+public Subscriptions(SparkSession sparkSession) {
+        super();
+        this.subscriptionsList = new ArrayList<>();
+				// Nuevo campo!
+        this.sparkSession = sparkSession;
+    }
+```
+
+De esta forma, a la hora de llamar al método parse de subscriptions, si el contexto de Spark no es null, podemos paralelizar el funcionamiento de la función de la siguiente forma:
+
+Se agrega a `arrObjString` la representación JSON de cada objeto dentro de nuestro archivo que se encuentra en el *filepath* (archivo del que queremos sacar los campos que nos interesan) y con esa información se crea una Dataset de Spark para poder convertir la lista `arrObjString` en algo que Spark pueda paralelizar.
+
+Con esta nueva variable `objStringDataset` y su posterior transformación con `flatMap`, podemos empezar a crear las SimpleSubscriptions, extrayendo de los strings en el dataset, los campos que son de nuestro interés. Con todas las SimpleSubscriptions hacemos una lista de las mismas que se devuelve al llamar `collect()` .
+
+```java
+// Preparo la lista de JSONObject a paralelizar
+// Considero Strings porque JSONObject no es Serializable
+List<String> arrObjString = new ArrayList<>();
+for (int i = 0, szi = arr.length(); i < szi; i++)
+    arrObjString.add(arr.getJSONObject(i).toString());
+    JavaRDD<String> objStringDataset = sparkSession.createDataset(arrObjString, Encoders.bean(String.class)).javaRDD();
+
+    List<SimpleSubscription> simpleSubscriptionList = objStringDataset
+    // Creo la simpleSubscription y la instancio
+         .flatMap(objString -> {
+             JSONObject obj = new JSONObject(objString);
+
+             SimpleSubscription simpleSubscription = new SimpleSubscription();
+             simpleSubscription.setUrl(obj.getString("url"));
+             String urlType = obj.getString("urlType");
+             simpleSubscription.setUrlType(urlType);
+
+             // Inyectar parser adecuado
+             if (urlType.equals("rss")) {
+                  simpleSubscription.setParser(new RssParser());
+             } else if (urlType.equals("reddit")) {
+                  simpleSubscription.setParser(new RedditParser());
+             }
+
+             JSONArray arrUrlParams = obj.getJSONArray("urlParams");
+             for (int j = 0, szj = arrUrlParams.length(); j < szj; j++)
+                  simpleSubscription.addUrlParameter(arrUrlParams.getString(j));
+
+             return Collections.singletonList(simpleSubscription).iterator();
+         })
+         // Obtengo la lista de simpleSubscriptions
+         .collect();
+
+    // Seteo la lista obtenida
+    setSubscriptionsList(simpleSubscriptionList);
+```
+
+Así es como se adaptó Spark para el parseo de las suscripciones.
+
+Luego, se utilizó un RDD  de SimpleSubscriptions para poder paralelizar la extracción de los feeds de la lista de suscripciones. Se uso `flatMap` para poder transformar los datos del RDD tuplas del tipo feed-error y así extraer los feeds de cada suscripción, expresando así en la tupla si se produce un error en el parseo. 
+
+```java
+// Paralelizo la lista de las subscripciones para hacerlo de forma concurrente
+JavaRDD<SimpleSubscription> subscriptionList = spark.parallelize(subscriptions.getSubscriptionList());
+// Obtengo todos los feeds
+// Se consideran tuplas (feed, error). Una es null y la otra es dato (se usa
+// para diferenciar)
+JavaRDD<Tuple2<Feed, String>> feeds = subscriptionList
+       // Separo las subscripciones por sus parámetros
+       .flatMap(simpleSubscription -> {
+            List<Tuple2<SimpleSubscription, Integer>> feedConstructorOptionsList = new ArrayList<>();
+            for (int i = 0, szi = simpleSubscription.getUrlParametersSize(); i < szi; i++)
+               feedConstructorOptionsList.add(new Tuple2<>(simpleSubscription, i));
+            return feedConstructorOptionsList.iterator();
+        })
+        // Obtengo el feed en base a los parámetros considerados (subscripción y
+        // urlParameter)
+        // Se devuelve en el formato (feed, error) siendo solo una null en cada tupla
+        .flatMap(feedOptions -> {
+             try {
+                Feed actualFeed = feedOptions._1().parse(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(actualFeed, null)).iterator();
+                    } catch (InvalidUrlTypeToFeedException e) {
+                        String actualError = "Invalid URL Type to get feed in "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    } catch (IOException e) {
+                        String actualError = "IO exception in subscription "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    } catch (HttpRequestException e) {
+                        String actualError = "Error in connection: " + e.getMessage() + " "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    } catch (ParserConfigurationException | ParseException e) {
+                        String actualError = "Parse error in "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    } catch (SAXException e) {
+                        String actualError = "SAX Exception in "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    } catch (EmptyFeedException e) {
+                        String actualError = "Empty Feed in "
+                                + feedOptions._1().getFormattedUrlForParameter(feedOptions._2());
+                        return Collections.singletonList(new Tuple2<Feed, String>(null, actualError)).iterator();
+                    }
+                });
+```
+
+De los pares feed-error obtenidos, se pule el RDD resultante para eliminar aquellos feeds nulos o que contengan errores.
+
+```java
+// Preparo la lista de feeds obtenidos
+        JavaRDD<Feed> feedList = feeds
+                .filter(actualFeed -> actualFeed._1() != null)
+                .flatMap(actualFeed -> Collections.singletonList(actualFeed._1()).iterator());
+
+        // Preparo la lista de errores que sucedieron
+        JavaRDD<String> errorList = feeds
+                .filter(actualFeed -> actualFeed._2() != null)
+                .flatMap(actualFeed -> Collections.singletonList(actualFeed._2()).iterator());
+```
+
+Finalmente, si se desea únicamente hacer un printeo de los feeds, se llama a `prettyPrint` para cada feed no nulo usando `foreach`.
+
+```java
+// Muestra los feeds al usuario
+feedList.foreach(Feed::prettyPrint);
+```
+
+Si se desea obtener las entidades nombradas, se procesan las entidades en un RDD aparte que nace de la transformación del RDD que contiene la lista de feeds, luego de aplicarles `flatMap` a cada articulo de la lista de artículos de cada feed. Luego se procede a imprimir por pantalla la información de cada entidad.
+
+```java
+// Heurística en uso
+            Heuristic heuristicUsed = new QuickHeuristic();
+
+            JavaRDD<namedEntity.entities.NamedEntity> namedEntities = feedList
+                    // Obtengo todos los artículos
+                    .flatMap(feed -> feed.getArticleList().iterator())
+                    // Obtengo las namedEntity
+                    .flatMap(article -> {
+                        article.computeNamedEntities(heuristicUsed);
+                        return article.getNamedEntityList().iterator();
+                    });
+
+            // Muestro las namedEntity en pantalla
+            namedEntities.foreach(namedEntity -> {
+                System.out.println(namedEntity.getName());
+                System.out.println(namedEntity.getFrequency());
+                System.out.println(namedEntity.getCategory());
+                System.out.println(namedEntity.getTheme());
+                System.out.println(namedEntity.getClass().toString());
+                System.out.println("-----------");
+            });
+```
+
+Finalmente se imprimen los errores que se hayan generado.
+
+```java
+if (!errorList.isEmpty()) {
+            System.out.println("==================================================");
+            System.out.println(
+                    "There was a total of " + errorList.count() + " errors in the creation of the Feeds:");
+            errorList.foreach(error -> System.out.println("  - " + error));
+        }
+```
+
+### Ventajas
+
+La ventaja de este código es que se también se ha podido expandir el uso de Spark en otros contextos que no sean los del archivo *********Main.java*********. Por ejemplo, se pudo paralelizar el parseo de las suscripciones, por lo que en un cluster de máquinas decente, se podría haber aumentado aún más la eficiencia de nuestro programa.
+
+Además, se cree que si bien se expandió el uso de Spark en otros objetos, también la complejidad de la misma es la más óptima.
+
+# Desarrollo Segunda Parte
+
+El código que decidimos utilizar fue el código 3 de nuestro compañero Emanuel Nicolas Herrador. 
+
+Sobre la implementación de nuestro compañero, los cambios principales que realizamos fueron en Main.java; se agregó la funcionalidad que busca los artículos que contengan una determinada palabra o entidad nombrada.
+
+Recapitulando la implementación de nuestro compañero, se obtienen los feeds en un RDD de artículos (luego del parseo ya mencionado y detallado anteriormente):
+
+```cpp
+JavaRDD<Article> articleList = feedList
+// Obtengo todos los artículos
+                .flatMap(feed -> feed.getArticleList().iterator());
+```
+
+y se decide lo siguiente, implementando la nueva funcionalidad:
+
+1. Si lo que se quiere es obtener los artículos de los feeds impresos, se indicará que se debe ingresar una oración/palabra/entidad para buscar los artículos que contengan esa oración o palabra clave.
+    
+    Para esto, se usa un objeto Scanner para leer lo ingresado por el usuario. Lo que se haya ingresado, se guarda en una variable `rawSearchTerms` que luego se utiliza para dividir la cadena contenida en palabras y almacenar cada una de ellas en un set de strings `searchTerms`.
+    
+    ```cpp
+    // Obtener el input de búsqueda sobre los feeds por parte del usuario
+    System.out.println("=====================  ¿Qué quiere buscar? Escríbalo en una oración y aprete Enter =====================");
+    Scanner scanner = new Scanner(System.in);
+    String rawSearchTerms = scanner.nextLine();
+    Set<String> searchTerms = new java.util.HashSet<>(Collections.emptySet());
+    
+    var terms = rawSearchTerms.split(" ");
+    Collections.addAll(searchTerms, terms);
+    
+    scanner.close();
+    System.out.println("===================== Solicitud recibida con éxito. La estamos procesando. =====================");
+    ```
+    
+    Luego, usando `flatMap` sobre el RDD que contiene nuestros artículos, se aplica a cada artículo la función `computeNamedEntities`. Además, se crea para cada entidad nombrada un par artículo-entidad_nombrada. Estos pares se guardan en la lista `namedEntityForArticleList` . La llamada a `flatMap` devuelve un iterador para cada elemento de `namedEntityForArticleList` y guarda esos iteradores en la variable `sortedArticle`. 
+    
+    ```cpp
+    List<Article> sortedArticles = articleList
+                        // Obtengo pares (artículo, entidad)
+                        .flatMap(article ->{
+                            // Computo las entidades del artículo
+                            article.computeNamedEntities(heuristicUsed);
+                            
+                            List<NamedEntity> namedEntityFullList = article.getNamedEntityList();
+                            List<Tuple2<Article, NamedEntity>> namedEntityForArticleList = new ArrayList<>();
+                            
+                            for(NamedEntity ne : namedEntityFullList){
+                                namedEntityForArticleList.add(new Tuple2<>(article, ne));
+                            }
+    
+                            return namedEntityForArticleList.iterator();
+                        })
+    ```
+    
+    A esta variable (`sortedArticle`) luego le aplicamos:
+    
+    - filter, para poder filtrar los pares de los artículos que tienen en sus entidades algunas de las palabras ingresadas por el usuario.
+        
+        ```cpp
+        // Filtro aquellos pares cuya entidad esté en la búsqueda del usuario
+        .filter(entityForArticle -> searchTerms.contains(entityForArticle._2().getName()))
+        ```
+        
+    - mapToPair para poder cambiar en los pares restantes, el campo de entidad nombrada por su frecuencia.
+        
+        ```cpp
+        // Cambio esa NamedEntity por su frecuencia
+        .mapToPair(entityForArticle -> new Tuple2<>(entityForArticle._1(), entityForArticle._2().getFrequency()))
+        ```
+        
+    - reduceByKey para poder sumar las frecuencias de cada artículo y obtener el número total de instancias por artículo en los pares
+        
+        ```cpp
+        // Sumo las frecuencias para cada artículo y obtengo su número para ordenar
+        .reduceByKey(Integer::sum)
+        ```
+        
+    - mapToPair y sortByKey de nuevo para poder ordenar los pares según el número de ocurrencias (frecuencia) de cada artículo de forma descendente
+        
+        ```cpp
+        // Swapeo para poder ordenar basándonos en el número de ocurrencias
+        .mapToPair(Tuple2::swap)
+        // Ordeno descendentemente
+        .sortByKey(false)
+        ```
+        
+    - y finalmente se usa map para quedarme sólo con los artículos y printearlos, y collect para obtener la lista de artículos respectiva.
+        
+        ```cpp
+        // Me quedo solo con los artículos a printear
+        .map(Tuple2::_2)
+        // Obtengo la lista para printear
+        .collect();
+        ```
+        
+    
+    Luego, se muestran los artículos ordenados (usando `prettyPrint`) según la cantidad de veces que aparecen las palabras ingresadas por el usuario en relación a las entidades nombradas de cada artículo.
+    
+    ```cpp
+    // Muestra los artículos al usuario
+    for(Article article : sortedArticles){
+       article.prettyPrint();
+    }
+    ```
+    
+2. Si lo que se quiere es printear solamente las entidades nombradas de todos los artículos, simplemente lo que se hace es usar `flatMap` para iterar sobre cada elemento del RDD que contiene los artículos (`articleList`), y aplicar `computeNamedEntities` con la heurística deseada para obtener la lista de entidades nombradas de cada artículo, y con `collect` y un `for`, imprimir todas ellas.
+    
+    ```cpp
+    // Obtengo las namedEntity
+    List<NamedEntity> namedEntities = articleList
+             .flatMap(article -> {
+                  article.computeNamedEntities(heuristicUsed);
+                  return article.getNamedEntityList().iterator();
+              })
+              // Obtengo la lista de las entidades
+              .collect();
+                
+    // Muestro las namedEntity en pantalla
+    for(NamedEntity namedEntity : namedEntities){
+       System.out.println(namedEntity.getName());
+       System.out.println(namedEntity.getFrequency());
+       System.out.println(namedEntity.getCategory());
+       System.out.println(namedEntity.getTheme());
+       System.out.println(namedEntity.getClass().toString());
+       System.out.println("-----------");
+    }
+    ```
+    
+
+Para el desarrollo de esta parte, no se hizo uso de inteligencias artificiales ni tampoco nos basamos en proyectos de ejemplo.
