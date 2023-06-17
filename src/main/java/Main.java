@@ -9,6 +9,7 @@ import namedEntity.heuristic.RandomHeuristic;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
+import org.jetbrains.annotations.NotNull;
 import org.xml.sax.SAXException;
 import scala.Tuple2;
 import subscriptions.SimpleSubscription;
@@ -126,17 +127,8 @@ public class Main {
         // CASOS DE EJECUCIÓN
         if (normalPrint) {
             // Obtener el input de búsqueda sobre los feeds por parte del usuario
-            System.out.println("=====================  ¿Qué quiere buscar? Escríbalo en una oración y aprete Enter =====================");
-            Scanner scanner = new Scanner(System.in);
-            String rawSearchTerms = scanner.nextLine();
-            Set<String> searchTerms = new java.util.HashSet<>(Collections.emptySet());
+            Set<String> searchTerms = getSearchTerms();
 
-            var terms = rawSearchTerms.split(" ");
-            Collections.addAll(searchTerms, terms);
-
-            scanner.close();
-            System.out.println("===================== Solicitud recibida con éxito. La estamos procesando. =====================");
-                        
             // Ordeno los artículos en base a lo buscado por el usuario
             List<Article> sortedArticles = articleList
                     // Obtengo pares (artículo, entidad)
@@ -203,5 +195,20 @@ public class Main {
 
         spark.close();
         sparkSession.close();
+    }
+
+    @NotNull
+    private static Set<String> getSearchTerms() {
+        System.out.println("=====================  ¿Qué quiere buscar? Escríbalo en una oración y aprete Enter =====================");
+        Scanner scanner = new Scanner(System.in);
+        String rawSearchTerms = scanner.nextLine();
+        Set<String> searchTerms = new java.util.HashSet<>(Collections.emptySet());
+
+        var terms = rawSearchTerms.split(" ");
+        Collections.addAll(searchTerms, terms);
+
+        scanner.close();
+        System.out.println("===================== Solicitud recibida con éxito. La estamos procesando. =====================");
+        return searchTerms;
     }
 }
