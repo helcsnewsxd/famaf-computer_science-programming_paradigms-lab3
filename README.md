@@ -1,3 +1,13 @@
+> [!note]
+> Distributed feed processing and keyword-based retrieval system using Apache Spark in Java.
+>
+> This project was developed for the Programming Paradigms course of the Computer Science program at FAMAF – Universidad Nacional de Córdoba.
+>
+> As part of Lab 3, we re-implemented our previous feed reader from Lab 2 over a distributed architecture using the Spark framework. In addition to reading and parsing RSS/Atom feeds, the application builds an inverted index for the collection of documents, enabling retrieval based on keyword queries—simulating basic web search engine functionality.
+> 
+> All documentation, comments and the code itself are written in Spanish, as it was intended for academic evaluation.
+
+
 # Lab 3 Informe
 
 Integrantes:
